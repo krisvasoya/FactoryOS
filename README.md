@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FactoryOS AI — Enterprise Manufacturing ERP
 
-## Getting Started
+A production-ready, AI-powered, multi-tenant Manufacturing ERP platform built for small and medium manufacturing businesses.
 
-First, run the development server:
+## 🚀 Features
+
+- **AI Co-Pilot** — Natural language chat for business insights, inventory forecasting, and supplier recommendations
+- **Multi-Tenant Architecture** — Isolated data per company with `companyId` enforced on every query
+- **Role-Based Access Control** — Owner, Admin, Manager, Accountant, Production, Warehouse, Sales, Viewer roles
+- **Dashboard** — Live financial metrics, machine telemetry, production queue, AI recommendations
+- **Inventory Management** — Warehouse stock levels, batch tracking, barcode visualization, low-stock alerts
+- **Production & BOM** — Bill of Materials builder, production order execution with material validation
+- **Finance & GST** — Invoicing, expense tracking, payments, interactive GST calculator
+- **Machine Monitoring** — Maintenance scheduling, running hours, AI predictive alerts
+- **Employee Management** — Attendance tracking, payroll, department management
+- **Reports** — Financial, production, and inventory analytics with AI summaries and CSV/PDF export
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 16 App Router, TypeScript, Tailwind CSS v4 |
+| Auth | Custom JWT (jose) + bcryptjs, HTTPOnly cookies |
+| Database | SQLite (dev) → PostgreSQL (prod), Prisma ORM |
+| Charts | Recharts |
+| Animations | Framer Motion |
+| AI | OpenAI API (with intelligent fallback mock) |
+
+## 📦 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm
+
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Run database migrations and generate Prisma client
+npx prisma migrate dev --name init
+
+# Seed with demo data (company, users, products, inventory, machines)
+node prisma/seed.js
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo Accounts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Role | Email | Password |
+|------|-------|----------|
+| Owner | owner@factoryos.com | password123 |
+| Production | production@factoryos.com | password123 |
+| Warehouse | warehouse@factoryos.com | password123 |
+| Accountant | finance@factoryos.com | password123 |
 
-## Learn More
+## 🔐 Security
 
-To learn more about Next.js, take a look at the following resources:
+- Passwords hashed with bcryptjs (10 salt rounds)
+- Sessions stored as signed JWTs in HTTPOnly cookies
+- All API routes validate session and enforce `companyId` tenant isolation
+- Role-based authorization on sensitive operations
+- Audit logs for all write operations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤖 AI Configuration (Optional)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Add your OpenAI API key to enable live AI responses:
 
-## Deploy on Vercel
+```bash
+# .env.local
+OPENAI_API_KEY=sk-your-key-here
+JWT_SECRET=your-32-char-secret-here
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Without a key, the system uses an intelligent built-in manufacturing knowledge base.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🗄 Database
+
+SQLite is used for local development. To switch to PostgreSQL for production:
+
+1. Update `prisma/schema.prisma`:
+   ```
+   provider = "postgresql"
+   url      = env("DATABASE_URL")
+   ```
+2. Set `DATABASE_URL` in your environment
+3. Run `npx prisma migrate dev`
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── api/v1/          # REST API routes (auth, dashboard, inventory, production, finance, machines, ai)
+│   ├── app/             # Protected app pages (layout + all module pages)
+│   ├── login/           # Authentication pages
+│   └── register/
+├── components/
+│   ├── sidebar.tsx      # Navigation sidebar
+│   ├── header.tsx       # Top header with notifications
+│   ├── ai-assistant.tsx # Floating AI Co-Pilot panel
+│   └── theme-context.tsx
+├── lib/
+│   ├── auth.ts          # JWT session management
+│   └── db.ts            # Prisma client singleton
+└── middleware.ts        # Route protection
+```
