@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as jose from 'jose';
 import { JWT_SECRET } from './lib/auth';
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const sessionToken = req.cookies.get('session')?.value;
 
