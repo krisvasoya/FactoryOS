@@ -132,11 +132,13 @@ graph TD
 | **Dashboard** | Unified executive dashboard summarizing business health. | Metric cards, dynamic Recharts visuals, machine status telemetry, AI recommendations. |
 | **Inventory** | Live inventory registers tracking raw materials and products. | Multi-warehouse stock tracking, low-stock threshold triggers, automated warnings. |
 | **Production** | Bill of Materials recipe configuration and order workflow. | BOM builder, Production Order execution, raw material validation against storage. |
-| **Finance** | Account ledgers tracking cost centers and cash flow. | Invoices, payment registers, automated cost-to-margin calculations, GST accounting. |
-| **Employees**| Employee rosters, payroll, and timesheets. | Attendance tracking (clock-in/clock-out), department classifications, salary records. |
+| **Finance** | Account ledgers tracking cost centers and cash flow. | Invoices, payment registers, automated cost-to-margin calculations, GST accounting, dynamic DB customer loading. |
+| **Employees**| Employee rosters, payroll, and timesheets. | Daily attendance clock-in/out console, geolocated shifts, 14-day history calendar, salary records. |
+| **Contacts** | CRM and Supplier Directory. | Customers/Buyers (credit limit meters) and Suppliers (rating stars out of 5). |
+| **Orders** | Supply Chain Orders. | Purchase Orders (vendor material buys) and Sales Orders (finished goods sales) with auto-sync stock level adjustments on shipment/receipt. |
 | **Machines**  | Shop-floor machinery tracking and telemetry. | Running hours telemetry, machine status pills (Active/Service/Offline), maintenance schedules. |
 | **Reports**   | Visual and structured analytical exports. | CSV/PDF export, interactive charts, AI-generated operational summaries. |
-| **AI Co-Pilot**| Floating intelligent chat assistant. | Contextual business insights, material forecasting, chat commands. |
+| **AI Co-Pilot**| Floating intelligent chat assistant. | Contextual database insights, material forecasting, Gemini + OpenAI keys, feature guidance. |
 | **Auth**      | Secure tenant and user portal access. | Role-Based Access Control, HTTPOnly JWT session cookies, password hashing. |
 
 ---
@@ -182,13 +184,13 @@ graph TD
 | **Frontend Framework** | Next.js 16.2.9 (App Router) | Layout structure, page routing, and React server/client orchestration. |
 | **Language** | TypeScript 5.x | Enforcing static type safety across schemas, API payloads, and layouts. |
 | **Styling** | Tailwind CSS v4 | Clean UI layouts, modern theme tokens, and dynamic styling rules. |
-| **Database** | SQLite (Dev) / PostgreSQL (Prod) | Structured relational storage supporting multi-tenant queries. |
+| **Database** | PostgreSQL (Neon Cloud) | Structured relational storage supporting multi-tenant queries. |
 | **ORM** | Prisma 6.19.3 | Query building, migrations, and database schema representation. |
 | **Authentication** | Custom JWT (jose) + HTTPOnly Cookies | Stateless session state, cryptographically signed cookies, and RBAC. |
 | **Cryptography** | bcryptjs | Hashing passwords with 10 salt rounds before database persistence. |
 | **Data Fetching** | Client-side Fetch API | Next.js API endpoints interaction and clean UI reloading states. |
 | **Visual Charts** | Recharts 3.8.1 | Custom Revenue vs Expenses bars and production output spline lines. |
-| **AI Integration** | OpenAI API | Intelligently analyzing database metrics to generate suggestions. |
+| **AI Integration** | Gemini API & OpenAI API | Intelligently analyzing database metrics to generate suggestions and explain features. |
 
 ---
 
@@ -420,6 +422,10 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 * [x] **Premium Dark Mode Theme**: Sleek, professional warm charcoal palette (`#0b0c0e`) with desaturated semantic colors.
 * [x] **5-Card Metric Layout**: Displaying live Revenue, Net Profit, Orders, and Low Stock levels side-by-side.
 * [x] **Sidebar Structure Refactor**: Relocated user profiles to the bottom-left sidebar and clean header bar.
+* [x] **Attendance Check-In Streak & Console**: Daily shift log widget with geolocation tracking and 14-day streak grid.
+* [x] **Supply Chain & CRM Module**: Added Contacts page (Buyers with credit limits, Suppliers with ratings) and Orders pipeline (Purchase/Sales Orders with auto-stock synching).
+* [x] **Project-Aware Gemini AI assistant**: Floating AI Co-Pilot fetching live DB counts and explaining every FactoryOS feature.
+* [x] **Live Finance Select Sync**: Invoice creations fetch database customers dynamically instead of hardcoded lists.
 
 ### In Progress
 * [ ] **Dynamic GST Reporting**: Interactive state taxes module detailing transaction tax structures.

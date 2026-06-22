@@ -11,6 +11,12 @@ export async function GET(req: NextRequest) {
 
     const { companyId } = session;
 
+    // Guard: verify the company from the session actually exists
+    const company = await db.company.findFirst({ where: { id: companyId } });
+    if (!company) {
+      return NextResponse.json({ error: 'Company not found. Please log in again.' }, { status: 403 });
+    }
+
     // Get or create mapping Employee profile
     let employee = await db.employee.findFirst({
       where: { companyId, email: session.email, deletedAt: null },
@@ -72,6 +78,12 @@ export async function POST(req: NextRequest) {
     const { companyId } = session;
     const body = await req.json().catch(() => ({}));
     const { action, coords } = body;
+
+    // Guard: verify the company from the session actually exists
+    const company = await db.company.findFirst({ where: { id: companyId } });
+    if (!company) {
+      return NextResponse.json({ error: 'Company not found. Please log in again.' }, { status: 403 });
+    }
 
     let employee = await db.employee.findFirst({
       where: { companyId, email: session.email, deletedAt: null },

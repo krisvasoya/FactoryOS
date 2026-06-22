@@ -31,6 +31,8 @@ export async function POST(req: NextRequest) {
     const passwordHash = await hashPassword(password);
 
     // Create Company and Owner in a transaction
+    // Timeout raised to 30s — registration performs 5 sequential writes and
+    // bcrypt hashing on slower DB connections can push past the default 5s.
     const result = await db.$transaction(async (tx) => {
       // 1. Create Company
       const company = await tx.company.create({
@@ -80,7 +82,7 @@ export async function POST(req: NextRequest) {
       });
 
       return { company, owner };
-    });
+    }, { timeout: 30000 });
 
     // Generate JWT token
     const token = await createSessionToken({
