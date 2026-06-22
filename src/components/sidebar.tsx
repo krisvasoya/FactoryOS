@@ -13,6 +13,8 @@ import {
   Cpu,
   BarChart3,
   Settings,
+  Users2,
+  ShoppingCart,
 } from 'lucide-react';
 import { FactoryOSLogo } from '@/components/factoryos-logo';
 
@@ -23,6 +25,8 @@ const sidebarItems = [
   { name: 'Production', href: '/app/production',      icon: ClipboardList },
   { name: 'Finance',    href: '/app/finance',         icon: Receipt },
   { name: 'Employees',  href: '/app/employees',       icon: Users },
+  { name: 'Contacts',   href: '/app/contacts',        icon: Users2 },
+  { name: 'Orders',     href: '/app/orders',          icon: ShoppingCart },
   { name: 'Machines',   href: '/app/machines',        icon: Cpu },
   { name: 'Reports',    href: '/app/reports',         icon: BarChart3 },
   { name: 'Settings',   href: '/app/settings',        icon: Settings },
