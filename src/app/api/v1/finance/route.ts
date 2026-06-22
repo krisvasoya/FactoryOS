@@ -56,6 +56,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing customer or invoice totals' }, { status: 400 });
       }
 
+      // Verify customer belongs to company
+      const customer = await db.customer.findFirst({
+        where: { id: customerId, companyId, deletedAt: null }
+      });
+      if (!customer) {
+        return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      }
+
       const subTotalVal = parseFloat(subTotal);
       if (isNaN(subTotalVal) || subTotalVal <= 0) {
         return NextResponse.json({ error: 'Amount must be positive' }, { status: 400 });
@@ -141,6 +149,14 @@ export async function POST(req: NextRequest) {
       const amountVal = parseFloat(amount);
       if (isNaN(amountVal) || amountVal <= 0) {
         return NextResponse.json({ error: 'Amount must be positive' }, { status: 400 });
+      }
+
+      // Verify invoice belongs to company
+      const invoice = await db.invoice.findFirst({
+        where: { id: invoiceId, companyId, deletedAt: null }
+      });
+      if (!invoice) {
+        return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
       }
 
       const payment = await db.$transaction(async (tx) => {

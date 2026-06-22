@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Layers, Plus, Search, HelpCircle, Activity, ShieldAlert } from 'lucide-react';
+import { Layers, Plus, Search, Activity } from 'lucide-react';
 
 interface RawMaterial {
   id: string;
@@ -43,7 +43,9 @@ export default function RawMaterialsPage() {
   }
 
   useEffect(() => {
-    loadMaterials();
+    setTimeout(() => {
+      loadMaterials();
+    }, 0);
   }, []);
 
   const handleAddMaterial = async (e: React.FormEvent) => {
@@ -70,7 +72,7 @@ export default function RawMaterialsPage() {
         const data = await res.json();
         setError(data.error || 'Failed to create material.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection failure.');
     }
   };

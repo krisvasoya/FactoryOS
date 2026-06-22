@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, UserCheck, UserX, Clock, DollarSign, Activity } from 'lucide-react';
+import { Users, Plus, UserCheck, UserX, DollarSign, Activity } from 'lucide-react';
 
 interface Attendance {
   id: string;
@@ -47,7 +47,11 @@ export default function EmployeesPage() {
     }
   }
 
-  useEffect(() => { loadEmployees(); }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      loadEmployees();
+    }, 0);
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,7 +141,7 @@ export default function EmployeesPage() {
                 <th className="p-4 font-semibold">Department</th>
                 <th className="p-4 font-semibold">Contact</th>
                 <th className="p-4 font-semibold">Monthly Salary</th>
-                <th className="p-4 font-semibold">Today's Status</th>
+                <th className="p-4 font-semibold">Today&apos;s Status</th>
                 <th className="p-4 font-semibold">Quick Mark</th>
               </tr>
             </thead>

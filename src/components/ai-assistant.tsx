@@ -4,6 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, X, Send, Bot, User, ArrowRight, Upload, AlertCircle, Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface OcrResult {
+  supplierName: string;
+  invoiceNumber: string;
+  date: string;
+  items: { desc: string; qty: number; price: number }[];
+  totalAmount: number;
+  detectedGST: string;
+}
+
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Array<{ sender: 'ai' | 'user'; text: string; date: Date }>>([
@@ -15,9 +24,8 @@ export default function AIAssistant() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [ocrFile, setOcrFile] = useState<File | null>(null);
   const [ocrLoading, setOcrLoading] = useState(false);
-  const [ocrResult, setOcrResult] = useState<any | null>(null);
+  const [ocrResult, setOcrResult] = useState<OcrResult | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,7 +63,7 @@ export default function AIAssistant() {
           },
         ]);
       }
-    } catch (e) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -72,7 +80,6 @@ export default function AIAssistant() {
   const handleOcrUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setOcrFile(file);
       setOcrLoading(true);
       setOcrResult(null);
 

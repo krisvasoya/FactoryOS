@@ -37,7 +37,7 @@ export async function verifySessionToken(token: string): Promise<UserSession | n
   try {
     const { payload } = await jose.jwtVerify(token, JWT_SECRET);
     return payload as unknown as UserSession;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Receipt, Plus, Search, Percent, TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
+import { Receipt, Plus, Percent, TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -95,8 +95,10 @@ export default function FinancePage() {
   }
 
   useEffect(() => {
-    loadFinance();
-    loadSelectors();
+    setTimeout(() => {
+      loadFinance();
+      loadSelectors();
+    }, 0);
   }, []);
 
   const handleCreateInvoice = async (e: React.FormEvent) => {
@@ -124,7 +126,7 @@ export default function FinancePage() {
         const errPayload = await res.json();
         setError(errPayload.error || 'Failed to create invoice.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection failure.');
     }
   };
@@ -154,7 +156,7 @@ export default function FinancePage() {
         const errPayload = await res.json();
         setError(errPayload.error || 'Failed to record expense.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection failure.');
     }
   };
@@ -185,7 +187,7 @@ export default function FinancePage() {
         const errPayload = await res.json();
         setError(errPayload.error || 'Failed to record payment.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection failure.');
     }
   };

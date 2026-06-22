@@ -14,7 +14,7 @@ export async function proxy(req: NextRequest) {
     try {
       const { payload } = await jose.jwtVerify(sessionToken, JWT_SECRET);
       session = payload;
-    } catch (e) {
+    } catch {
       // Invalid token
     }
   }

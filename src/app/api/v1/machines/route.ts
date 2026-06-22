@@ -46,6 +46,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing details for maintenance schedule' }, { status: 400 });
       }
 
+      // Verify machine belongs to company
+      const machine = await db.machine.findFirst({
+        where: { id: machineId, companyId, deletedAt: null }
+      });
+      if (!machine) {
+        return NextResponse.json({ error: 'Machine not found' }, { status: 404 });
+      }
+
       const log = await db.maintenanceLog.create({
         data: {
           machineId,
@@ -81,6 +89,22 @@ export async function POST(req: NextRequest) {
 
       if (!logId || !machineId) {
         return NextResponse.json({ error: 'Missing completion IDs' }, { status: 400 });
+      }
+
+      // Verify machine belongs to company
+      const machine = await db.machine.findFirst({
+        where: { id: machineId, companyId, deletedAt: null }
+      });
+      if (!machine) {
+        return NextResponse.json({ error: 'Machine not found' }, { status: 404 });
+      }
+
+      // Verify maintenance log exists for this machine
+      const logExists = await db.maintenanceLog.findFirst({
+        where: { id: logId, machineId: machine.id, deletedAt: null }
+      });
+      if (!logExists) {
+        return NextResponse.json({ error: 'Maintenance log not found for this machine' }, { status: 404 });
       }
 
       const log = await db.$transaction(async (tx) => {

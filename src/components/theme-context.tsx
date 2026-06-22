@@ -17,12 +17,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     if (savedTheme) {
-      setTheme(savedTheme);
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+      setTimeout(() => {
+        setTheme(savedTheme);
+      }, 0);
     } else {
       // Default to light theme; clear any dark class
       document.documentElement.classList.remove('dark');
-      setTheme('light');
     }
   }, []);
 

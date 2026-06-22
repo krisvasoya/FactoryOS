@@ -77,6 +77,47 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Quantity must be a positive number' }, { status: 400 });
     }
 
+    // Verify source warehouse belongs to company
+    const warehouse = await db.warehouse.findFirst({
+      where: { id: warehouseId, companyId, deletedAt: null }
+    });
+    if (!warehouse) {
+      return NextResponse.json({ error: 'Warehouse not found' }, { status: 404 });
+    }
+
+    // Verify destination warehouse belongs to company if it is a Transfer operation
+    if (type === 'Transfer') {
+      if (!destWarehouseId) {
+        return NextResponse.json({ error: 'Destination warehouse is required for transfer.' }, { status: 400 });
+      }
+      const destWarehouse = await db.warehouse.findFirst({
+        where: { id: destWarehouseId, companyId, deletedAt: null }
+      });
+      if (!destWarehouse) {
+        return NextResponse.json({ error: 'Destination warehouse not found' }, { status: 404 });
+      }
+    }
+
+    // Verify product belongs to company if provided
+    if (productId) {
+      const product = await db.product.findFirst({
+        where: { id: productId, companyId, deletedAt: null }
+      });
+      if (!product) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+    }
+
+    // Verify raw material belongs to company if provided
+    if (rawMaterialId) {
+      const rawMaterial = await db.rawMaterial.findFirst({
+        where: { id: rawMaterialId, companyId, deletedAt: null }
+      });
+      if (!rawMaterial) {
+        return NextResponse.json({ error: 'Raw material not found' }, { status: 404 });
+      }
+    }
+
     // Execute within a prisma transaction to ensure consistency
     const result = await db.$transaction(async (tx) => {
       // 1. Log Stock Movement
@@ -165,8 +206,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(result, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Inventory adjustment failed:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

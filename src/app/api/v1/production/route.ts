@@ -60,6 +60,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing product, name or components' }, { status: 400 });
       }
 
+      // Verify product belongs to company
+      const bomProduct = await db.product.findFirst({
+        where: { id: productId, companyId, deletedAt: null },
+      });
+      if (!bomProduct) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+
       const bom = await db.$transaction(async (tx) => {
         const newBom = await tx.billOfMaterials.create({
           data: {
@@ -95,6 +103,32 @@ export async function POST(req: NextRequest) {
       const qtyVal = parseFloat(quantity);
       if (qtyVal <= 0) {
         return NextResponse.json({ error: 'Quantity must be positive' }, { status: 400 });
+      }
+
+      // Verify product belongs to company
+      const orderProduct = await db.product.findFirst({
+        where: { id: productId, companyId, deletedAt: null },
+      });
+      if (!orderProduct) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+
+      // Verify BOM belongs to company
+      const orderBom = await db.billOfMaterials.findFirst({
+        where: { id: bomId, companyId, deletedAt: null },
+      });
+      if (!orderBom) {
+        return NextResponse.json({ error: 'BOM not found' }, { status: 404 });
+      }
+
+      // Verify machine belongs to company (if provided)
+      if (machineId) {
+        const orderMachine = await db.machine.findFirst({
+          where: { id: machineId, companyId, deletedAt: null },
+        });
+        if (!orderMachine) {
+          return NextResponse.json({ error: 'Machine not found' }, { status: 404 });
+        }
       }
 
       // Check materials stock before allocating order
@@ -194,9 +228,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing order details' }, { status: 400 });
       }
 
+      // Verify the allowed status values
+      const allowedStatuses = ['Completed', 'Cancelled'];
+      if (!allowedStatuses.includes(status)) {
+        return NextResponse.json({ error: 'Invalid status value' }, { status: 400 });
+      }
+
       const order = await db.$transaction(async (tx) => {
-        const existingOrder = await tx.productionOrder.findUnique({
-          where: { id: orderId },
+        // Verify order belongs to company
+        const existingOrder = await tx.productionOrder.findFirst({
+          where: { id: orderId, companyId },
         });
 
         if (!existingOrder) throw new Error('Order not found');
@@ -257,8 +298,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ error: 'Invalid operation' }, { status: 400 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Production execution error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

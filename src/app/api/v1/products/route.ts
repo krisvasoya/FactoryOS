@@ -54,6 +54,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Product SKU already exists' }, { status: 400 });
     }
 
+    // Verify category belongs to company (if provided)
+    if (categoryId) {
+      const category = await db.category.findFirst({
+        where: { id: categoryId, companyId: session.companyId, deletedAt: null },
+      });
+      if (!category) {
+        return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+      }
+    }
+
+    const priceVal = parseFloat(price) || 0.0;
+    const costVal = parseFloat(cost) || 0.0;
+
+    if (priceVal < 0) {
+      return NextResponse.json({ error: 'Price must be zero or positive' }, { status: 400 });
+    }
+    if (costVal < 0) {
+      return NextResponse.json({ error: 'Cost must be zero or positive' }, { status: 400 });
+    }
+
     const product = await db.product.create({
       data: {
         companyId: session.companyId,
@@ -61,8 +81,8 @@ export async function POST(req: NextRequest) {
         sku: sku.trim(),
         name: name.trim(),
         description: description || null,
-        price: parseFloat(price) || 0.0,
-        cost: parseFloat(cost) || 0.0,
+        price: priceVal,
+        cost: costVal,
         unit: unit || 'pcs',
         type: type || 'Finished',
       },

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Boxes, Plus, Search, ArrowLeftRight, Activity, AlertTriangle, QrCode } from 'lucide-react';
+import { Search, ArrowLeftRight, Activity, AlertTriangle, QrCode } from 'lucide-react';
 
 interface Warehouse {
   id: string;
@@ -82,8 +82,8 @@ export default function InventoryPage() {
         const prods = await prodsRes.json();
         const mats = await matsRes.json();
         const combined = [
-          ...prods.map((p: any) => ({ id: p.id, name: p.name, sku: p.sku, kind: 'product' as const })),
-          ...mats.map((m: any) => ({ id: m.id, name: m.name, sku: m.sku, kind: 'material' as const })),
+          ...prods.map((p: { id: string; name: string; sku: string }) => ({ id: p.id, name: p.name, sku: p.sku, kind: 'product' as const })),
+          ...mats.map((m: { id: string; name: string; sku: string }) => ({ id: m.id, name: m.name, sku: m.sku, kind: 'material' as const })),
         ];
         setCatalogItems(combined);
         if (combined.length > 0) setItemId(combined[0].id + '|' + combined[0].kind);
@@ -94,8 +94,10 @@ export default function InventoryPage() {
   }
 
   useEffect(() => {
-    loadInventory();
-    loadSelectors();
+    setTimeout(() => {
+      loadInventory();
+      loadSelectors();
+    }, 0);
   }, []);
 
   const handleAdjustment = async (e: React.FormEvent) => {
@@ -131,7 +133,7 @@ export default function InventoryPage() {
         const payloadErr = await res.json();
         setError(payloadErr.error || 'Failed to complete transaction.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection failure.');
     }
   };

@@ -54,6 +54,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Material SKU already exists' }, { status: 400 });
     }
 
+    // Verify category belongs to company (if provided)
+    if (categoryId) {
+      const category = await db.category.findFirst({
+        where: { id: categoryId, companyId: session.companyId, deletedAt: null },
+      });
+      if (!category) {
+        return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+      }
+    }
+
+    const costVal = parseFloat(cost) || 0.0;
+    const minStockVal = parseFloat(minStock) || 0.0;
+
+    if (costVal < 0) {
+      return NextResponse.json({ error: 'Cost must be zero or positive' }, { status: 400 });
+    }
+    if (minStockVal < 0) {
+      return NextResponse.json({ error: 'Minimum stock level must be zero or positive' }, { status: 400 });
+    }
+
     const material = await db.rawMaterial.create({
       data: {
         companyId: session.companyId,
@@ -61,9 +81,9 @@ export async function POST(req: NextRequest) {
         sku: sku.trim(),
         name: name.trim(),
         description: description || null,
-        cost: parseFloat(cost) || 0.0,
+        cost: costVal,
         unit: unit || 'kg',
-        minStock: parseFloat(minStock) || 0.0,
+        minStock: minStockVal,
       },
     });
 

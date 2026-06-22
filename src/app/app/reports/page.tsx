@@ -140,7 +140,8 @@ export default function ReportsPage() {
                       <Cell key={idx} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v: any) => `$${Number(v).toLocaleString()}`} />
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <Tooltip contentStyle={tooltipStyle} formatter={(v: any) => `$${Number(v ?? 0).toLocaleString()}`} />
                   <Legend iconType="circle" />
                 </PieChart>
               ) : activeReport === 'production' ? (
@@ -166,7 +167,8 @@ export default function ReportsPage() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1f2937" />
                   <XAxis dataKey="month" stroke="#64748b" fontSize={10} tickLine={false} />
                   <YAxis stroke="#64748b" fontSize={10} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v: any) => `$${Number(v).toLocaleString()}`} />
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  <Tooltip contentStyle={tooltipStyle} formatter={(value: any) => [`$${Number(value).toLocaleString()}`, '']} />
                   <Legend verticalAlign="top" height={36} iconType="circle" />
                   <Area type="monotone" dataKey="Revenue" stroke="#38bdf8" strokeWidth={2} fillOpacity={1} fill="url(#revGrad)" />
                   <Area type="monotone" dataKey="Expenses" stroke="#f87171" strokeWidth={2} fillOpacity={1} fill="url(#expGrad)" />

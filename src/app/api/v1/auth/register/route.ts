@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       });
 
       // 3. Create default Warehouses
-      const whMain = await tx.warehouse.create({
+      await tx.warehouse.create({
         data: {
           companyId: company.id,
           name: 'Central Warehouse',

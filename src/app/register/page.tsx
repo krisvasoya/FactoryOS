@@ -40,7 +40,7 @@ export default function RegisterPage() {
       } else {
         setError(data.error || 'Registration failed. Please check entries.');
       }
-    } catch (err) {
+    } catch {
       setError('A connection error occurred. Please try again.');
     } finally {
       setLoading(false);

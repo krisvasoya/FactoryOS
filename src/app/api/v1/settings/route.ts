@@ -91,6 +91,17 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
       }
 
+      // Password strength: minimum 8 characters (mirrors registration policy)
+      if (password.length < 8) {
+        return NextResponse.json({ error: 'Password must be at least 8 characters long' }, { status: 400 });
+      }
+
+      // Role sanity check — prevent arbitrary role injection
+      const allowedRoles = ['Admin', 'Manager', 'Accountant', 'Production', 'Warehouse', 'Sales', 'Viewer'];
+      if (!allowedRoles.includes(role)) {
+        return NextResponse.json({ error: 'Invalid role specified' }, { status: 400 });
+      }
+
       const existingUser = await db.user.findFirst({
         where: { email: email.toLowerCase().trim(), deletedAt: null },
       });

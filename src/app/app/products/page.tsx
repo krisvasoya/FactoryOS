@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Package, Plus, Search, Tag, DollarSign, Activity } from 'lucide-react';
+import { Package, Plus, Search, Tag, Activity } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -45,7 +45,9 @@ export default function ProductsPage() {
   }
 
   useEffect(() => {
-    loadProducts();
+    setTimeout(() => {
+      loadProducts();
+    }, 0);
   }, []);
 
   const handleAddProduct = async (e: React.FormEvent) => {
@@ -72,7 +74,7 @@ export default function ProductsPage() {
         const data = await res.json();
         setError(data.error || 'Failed to create product.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection failure.');
     }
   };

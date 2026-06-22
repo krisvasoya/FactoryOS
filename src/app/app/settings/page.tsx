@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Settings, Shield, UserPlus, Building, Activity, Info } from 'lucide-react';
+import { Shield, UserPlus, Building, Activity, Info } from 'lucide-react';
 
 interface CompanyInfo {
   name: string;
@@ -59,7 +59,9 @@ export default function SettingsPage() {
   }
 
   useEffect(() => {
-    loadSettings();
+    setTimeout(() => {
+      loadSettings();
+    }, 0);
   }, []);
 
   const handleUpdateCompany = async (e: React.FormEvent) => {
@@ -86,7 +88,7 @@ export default function SettingsPage() {
         const data = await res.json();
         setError(data.error || 'Failed to update company.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection failure.');
     }
   };
@@ -118,7 +120,7 @@ export default function SettingsPage() {
         const data = await res.json();
         setError(data.error || 'Failed to onboard team member.');
       }
-    } catch (err) {
+    } catch {
       setError('Connection error.');
     }
   };

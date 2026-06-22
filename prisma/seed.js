@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 
@@ -141,7 +142,7 @@ async function main() {
     },
   });
 
-  const prodEnclosure = await prisma.product.create({
+  await prisma.product.create({
     data: {
       companyId: company.id,
       categoryId: catPlastics.id,
@@ -183,7 +184,7 @@ async function main() {
   const whMain = await prisma.warehouse.create({
     data: { companyId: company.id, name: 'Central Warehouse', location: 'Building A' },
   });
-  const whTransit = await prisma.warehouse.create({
+  await prisma.warehouse.create({
     data: { companyId: company.id, name: 'Secondary Hub', location: 'Building B' },
   });
 
@@ -302,7 +303,7 @@ async function main() {
     },
   });
 
-  const supplier = await prisma.supplier.create({
+  await prisma.supplier.create({
     data: {
       companyId: company.id,
       name: 'Silicon Valley Components',

@@ -80,6 +80,19 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Missing attendance data' }, { status: 400 });
       }
 
+      // Verify employee belongs to company
+      const employee = await db.employee.findFirst({
+        where: {
+          id: employeeId,
+          companyId,
+          deletedAt: null,
+        },
+      });
+
+      if (!employee) {
+        return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
+      }
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 

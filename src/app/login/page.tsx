@@ -33,7 +33,7 @@ export default function LoginPage() {
       } else {
         setError(data.error || 'Invalid credentials. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setError('A connection error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -60,7 +60,7 @@ export default function LoginPage() {
         const data = await res.json();
         setError(data.error || 'Failed to initialize demo session.');
       }
-    } catch (err) {
+    } catch {
       setError('Demo initialization error.');
     } finally {
       setLoading(false);

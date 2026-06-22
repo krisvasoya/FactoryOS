@@ -121,7 +121,9 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    loadDashboardData();
+    setTimeout(() => {
+      loadDashboardData();
+    }, 0);
   }, []);
 
   const handleRefresh = () => {
@@ -416,7 +418,7 @@ export default function DashboardPage() {
                   {act.type === 'finance'    && <DollarSign className="h-3.5 w-3.5" style={{ color: 'var(--status-success-text)' }} />}
                   {act.type === 'alert'      && <AlertTriangle className="h-3.5 w-3.5" style={{ color: 'var(--status-warning-text)' }} />}
                   {act.type === 'machine'    && <Cpu className="h-3.5 w-3.5" style={{ color: 'var(--status-info-text)' }} />}
-                  {act.type === 'supplier'   && <PackageCheck className="h-3.5 w-3.5 style={{ color: 'var(--muted-foreground)' }}" />}
+                  {act.type === 'supplier'   && <PackageCheck className="h-3.5 w-3.5" style={{ color: 'var(--muted-foreground)' }} />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
