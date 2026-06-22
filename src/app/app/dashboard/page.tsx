@@ -156,12 +156,116 @@ export default function DashboardPage() {
   const hasFinanceData = data.financialData && data.financialData.some(d => d.Revenue > 0 || d.Expenses > 0);
   const hasProductionData = data.productionData && data.productionData.some(d => d.Target > 0 || d.Completed > 0);
 
+  // Calculate Revenue MoM Change
+  let revenueChangeText = '0.0% vs last month';
+  let revenuePositive: boolean | 'neutral' = 'neutral';
+  if (data.financialData && data.financialData.length >= 2) {
+    const currentRev = data.financialData[data.financialData.length - 1].Revenue;
+    const prevRev = data.financialData[data.financialData.length - 2].Revenue;
+    if (prevRev > 0) {
+      const changeVal = ((currentRev - prevRev) / prevRev) * 100;
+      if (changeVal > 0) {
+        revenueChangeText = `+${changeVal.toFixed(1)}% vs last month`;
+        revenuePositive = true;
+      } else if (changeVal < 0) {
+        revenueChangeText = `${changeVal.toFixed(1)}% vs last month`;
+        revenuePositive = false;
+      } else {
+        revenueChangeText = '0.0% vs last month';
+        revenuePositive = 'neutral';
+      }
+    } else if (currentRev > 0) {
+      revenueChangeText = '+100.0% vs last month';
+      revenuePositive = true;
+    }
+  }
+
+  // Calculate Net Profit MoM Change
+  let profitChangeText = '0.0% vs last month';
+  let profitPositive: boolean | 'neutral' = 'neutral';
+  if (data.financialData && data.financialData.length >= 2) {
+    const currentRev = data.financialData[data.financialData.length - 1].Revenue;
+    const currentExp = data.financialData[data.financialData.length - 1].Expenses;
+    const prevRev = data.financialData[data.financialData.length - 2].Revenue;
+    const prevExp = data.financialData[data.financialData.length - 2].Expenses;
+    const currentProfit = currentRev - currentExp;
+    const prevProfit = prevRev - prevExp;
+    if (prevProfit !== 0) {
+      const changeVal = ((currentProfit - prevProfit) / Math.abs(prevProfit)) * 100;
+      if (changeVal > 0) {
+        profitChangeText = `+${changeVal.toFixed(1)}% vs last month`;
+        profitPositive = true;
+      } else if (changeVal < 0) {
+        profitChangeText = `${changeVal.toFixed(1)}% vs last month`;
+        profitPositive = false;
+      } else {
+        profitChangeText = '0.0% vs last month';
+        profitPositive = 'neutral';
+      }
+    } else if (currentProfit !== 0) {
+      profitChangeText = currentProfit > 0 ? '+100.0% vs last month' : '-100.0% vs last month';
+      profitPositive = currentProfit > 0;
+    }
+  }
+
+  // Calculate Total Orders Change
+  let ordersChangeText = '0.0% vs last week';
+  let ordersPositive: boolean | 'neutral' = 'neutral';
+  if (data.productionData && data.productionData.length >= 2) {
+    const currentOrders = data.productionData[data.productionData.length - 1].Target;
+    const prevOrders = data.productionData[data.productionData.length - 2].Target;
+    if (prevOrders > 0) {
+      const changeVal = ((currentOrders - prevOrders) / prevOrders) * 100;
+      if (changeVal > 0) {
+        ordersChangeText = `+${changeVal.toFixed(1)}% vs last week`;
+        ordersPositive = true;
+      } else if (changeVal < 0) {
+        ordersChangeText = `${changeVal.toFixed(1)}% vs last week`;
+        ordersPositive = false;
+      } else {
+        ordersChangeText = '0.0% vs last week';
+        ordersPositive = 'neutral';
+      }
+    } else if (currentOrders > 0) {
+      ordersChangeText = '+100.0% vs last week';
+      ordersPositive = true;
+    }
+  }
+
+  // Calculate Pending Orders Change
+  let pendingChangeText = '0.0% vs last week';
+  let pendingPositive: boolean | 'neutral' = 'neutral';
+  if (data.productionData && data.productionData.length >= 2) {
+    const currentOrders = data.productionData[data.productionData.length - 1].Target;
+    const currentCompleted = data.productionData[data.productionData.length - 1].Completed;
+    const prevOrders = data.productionData[data.productionData.length - 2].Target;
+    const prevCompleted = data.productionData[data.productionData.length - 2].Completed;
+    const currentPending = Math.max(0, currentOrders - currentCompleted);
+    const prevPending = Math.max(0, prevOrders - prevCompleted);
+    if (prevPending > 0) {
+      const changeVal = ((currentPending - prevPending) / prevPending) * 100;
+      if (changeVal > 0) {
+        pendingChangeText = `+${changeVal.toFixed(1)}% vs last week`;
+        pendingPositive = false; // Increasing pending orders is bad
+      } else if (changeVal < 0) {
+        pendingChangeText = `${changeVal.toFixed(1)}% vs last week`;
+        pendingPositive = true; // Decreasing pending orders is good
+      } else {
+        pendingChangeText = '0.0% vs last week';
+        pendingPositive = 'neutral';
+      }
+    } else if (currentPending > 0) {
+      pendingChangeText = '+100.0% vs last week';
+      pendingPositive = false;
+    }
+  }
+
   const metrics = [
     {
       label: 'Total Revenue',
       value: `₹${data.metrics.monthlySales.toLocaleString()}`,
-      change: '24.5% vs last month',
-      positive: true,
+      change: revenueChangeText,
+      positive: revenuePositive,
       icon: IndianRupee,
       iconColor: 'var(--status-success-text)',
       iconBg: 'var(--status-success-bg)',
@@ -169,8 +273,8 @@ export default function DashboardPage() {
     {
       label: 'Net Profit',
       value: `₹${data.metrics.netProfit.toLocaleString()}`,
-      change: '18.3% vs last month',
-      positive: true,
+      change: profitChangeText,
+      positive: profitPositive,
       icon: TrendingUp,
       iconColor: 'var(--status-success-text)',
       iconBg: 'var(--status-success-bg)',
@@ -178,8 +282,8 @@ export default function DashboardPage() {
     {
       label: 'Total Orders',
       value: `${data.production.pending + data.production.active + data.production.completed}`,
-      change: '12.6% vs last month',
-      positive: true,
+      change: ordersChangeText,
+      positive: ordersPositive,
       icon: ShoppingBag,
       iconColor: 'var(--status-info-text)',
       iconBg: 'var(--status-info-bg)',
@@ -187,8 +291,8 @@ export default function DashboardPage() {
     {
       label: 'Pending Orders',
       value: `${data.production.pending}`,
-      change: '8.3% vs last month',
-      positive: false,
+      change: pendingChangeText,
+      positive: pendingPositive,
       icon: Hourglass,
       iconColor: 'var(--status-warning-text)',
       iconBg: 'var(--status-warning-bg)',
@@ -196,11 +300,11 @@ export default function DashboardPage() {
     {
       label: 'Low Stock Items',
       value: `${data.lowStock.length}`,
-      change: 'Reorder Needed',
-      positive: false,
+      change: data.lowStock.length > 0 ? 'Reorder Needed' : 'All stock healthy',
+      positive: data.lowStock.length > 0 ? false : 'neutral',
       icon: Boxes,
-      iconColor: 'var(--status-danger-text)',
-      iconBg: 'var(--status-danger-bg)',
+      iconColor: data.lowStock.length > 0 ? 'var(--status-danger-text)' : 'var(--status-success-text)',
+      iconBg: data.lowStock.length > 0 ? 'var(--status-danger-bg)' : 'var(--status-success-bg)',
     },
   ];
 
