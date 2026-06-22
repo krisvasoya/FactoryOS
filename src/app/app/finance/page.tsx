@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Receipt, Plus, Percent, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { Receipt, Plus, Percent, TrendingUp, TrendingDown, IndianRupee } from 'lucide-react';
 import { TableSkeleton } from '@/components/skeleton';
 
 interface Customer {
@@ -247,7 +247,7 @@ export default function FinancePage() {
         <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between shadow-sm">
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-muted-foreground uppercase">Ledger Invoiced</span>
-            <div className="text-base font-bold">${revenueTotal.toFixed(2)}</div>
+            <div className="text-base font-bold">₹{revenueTotal.toFixed(2)}</div>
           </div>
           <TrendingUp className="h-4 w-4 text-sky-400" />
         </div>
@@ -255,7 +255,7 @@ export default function FinancePage() {
         <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between shadow-sm">
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-muted-foreground uppercase">Operational Expenses</span>
-            <div className="text-base font-bold text-red-500">${expenseTotal.toFixed(2)}</div>
+            <div className="text-base font-bold text-red-500">₹{expenseTotal.toFixed(2)}</div>
           </div>
           <TrendingDown className="h-4 w-4 text-red-500" />
         </div>
@@ -263,15 +263,15 @@ export default function FinancePage() {
         <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between shadow-sm">
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-muted-foreground uppercase">Payments Received</span>
-            <div className="text-base font-bold text-emerald-500">${cashInflow.toFixed(2)}</div>
+            <div className="text-base font-bold text-emerald-500">₹{cashInflow.toFixed(2)}</div>
           </div>
-          <DollarSign className="h-4 w-4 text-emerald-500" />
+          <IndianRupee className="h-4 w-4 text-emerald-500" />
         </div>
 
         <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between shadow-sm">
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-muted-foreground uppercase">Estimated Profit</span>
-            <div className="text-base font-bold text-foreground">${netProfit.toFixed(2)}</div>
+            <div className="text-base font-bold text-foreground">₹{netProfit.toFixed(2)}</div>
           </div>
           <TrendingUp className="h-4 w-4 text-emerald-500" />
         </div>
@@ -339,8 +339,8 @@ export default function FinancePage() {
                           <td className="p-4 text-foreground font-semibold">{inv.customer?.name || 'Walk-in Client'}</td>
                           <td className="p-4 text-muted-foreground">{new Date(inv.dueDate).toLocaleDateString()}</td>
                           <td className="p-4">
-                            <div className="font-bold text-foreground">${inv.totalAmount.toFixed(2)}</div>
-                            <div className="text-[9px] text-muted-foreground mt-0.5">GST Included: ${inv.taxAmount.toFixed(2)}</div>
+                            <div className="font-bold text-foreground">₹{inv.totalAmount.toFixed(2)}</div>
+                            <div className="text-[9px] text-muted-foreground mt-0.5">GST Included: ₹{inv.taxAmount.toFixed(2)}</div>
                           </td>
                           <td className="p-4">
                             <span className={`rounded-lg px-2 py-0.5 text-[9px] font-bold ${
@@ -402,7 +402,7 @@ export default function FinancePage() {
                             </span>
                           </td>
                           <td className="p-4 text-muted-foreground leading-relaxed">{exp.description || 'N/A'}</td>
-                          <td className="p-4 font-bold text-red-500">${exp.amount.toFixed(2)}</td>
+                          <td className="p-4 font-bold text-red-500">₹{exp.amount.toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -435,7 +435,7 @@ export default function FinancePage() {
                           <td className="p-4 font-mono font-medium">{pay.invoice?.invoiceNumber}</td>
                           <td className="p-4 text-foreground">{pay.method}</td>
                           <td className="p-4 font-mono text-muted-foreground">{pay.reference || 'N/A'}</td>
-                          <td className="p-4 font-bold text-emerald-500">${pay.amount.toFixed(2)}</td>
+                          <td className="p-4 font-bold text-emerald-500">₹{pay.amount.toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -457,7 +457,7 @@ export default function FinancePage() {
 
               <div className="space-y-3 text-xs">
                 <div className="space-y-1">
-                  <label className="font-semibold text-muted-foreground">Pre-Tax Base Amount ($)</label>
+                  <label className="font-semibold text-muted-foreground">Pre-Tax Base Amount (₹)</label>
                   <input
                     type="number"
                     value={gstAmountInput}
@@ -493,11 +493,11 @@ export default function FinancePage() {
                   <div className="rounded-xl border border-border bg-secondary/10 p-3 space-y-1.5 text-[10px]">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Computed GST Tax:</span>
-                      <span className="font-semibold text-foreground">${calculatedGST.tax.toFixed(2)}</span>
+                      <span className="font-semibold text-foreground">₹{calculatedGST.tax.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between border-t border-border pt-1.5 text-xs font-bold">
                       <span className="text-muted-foreground">Invoice Grand Total:</span>
-                      <span className="text-primary">${calculatedGST.total.toFixed(2)}</span>
+                      <span className="text-primary">₹{calculatedGST.total.toFixed(2)}</span>
                     </div>
                   </div>
                 )}
@@ -543,7 +543,7 @@ export default function FinancePage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold">Pre-Tax Subtotal ($) *</label>
+                  <label className="font-semibold">Pre-Tax Subtotal (₹) *</label>
                   <input
                     type="number"
                     required
@@ -618,7 +618,7 @@ export default function FinancePage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold">Cash Outflow Amount ($) *</label>
+                  <label className="font-semibold">Cash Outflow Amount (₹) *</label>
                   <input
                     type="number"
                     required
@@ -658,7 +658,7 @@ export default function FinancePage() {
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-border pb-3">
               <span className="font-bold text-sm flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-sky-400" /> Record Client Payment
+                <IndianRupee className="h-4 w-4 text-sky-400" /> Record Client Payment
               </span>
               <button onClick={() => setShowPaymentModal(false)} className="text-muted-foreground hover:text-foreground text-xs">
                 Cancel
@@ -674,7 +674,7 @@ export default function FinancePage() {
             <form onSubmit={handleRecordPayment} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold">Cleared Inflow Amount ($) *</label>
+                  <label className="font-semibold">Cleared Inflow Amount (₹) *</label>
                   <input
                     type="number"
                     required

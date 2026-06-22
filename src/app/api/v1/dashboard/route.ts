@@ -97,10 +97,14 @@ export async function GET(req: NextRequest) {
     });
 
     // 7. Calculate Business Health Score
-    // Formula: (Net Profit ratio + Inventory ratio + Machine status ratio) * 10
-    const profitMargin = revenue > 0 ? (netProfit / revenue) * 100 : 70;
-    const machineHealthRatio = machines.length > 0 ? (activeMachinesCount / machines.length) * 100 : 80;
-    const healthScore = Math.min(100, Math.round((profitMargin * 0.4) + (machineHealthRatio * 0.4) + 20));
+    const hasAnyInvoices = invoices.length > 0;
+    const hasAnyExpenses = expenses.length > 0;
+    const hasAnyMachines = machines.length > 0;
+    const isNewCompany = !hasAnyInvoices && !hasAnyExpenses && !hasAnyMachines && inventoryItems.length === 0;
+
+    const profitMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+    const machineHealthRatio = machines.length > 0 ? (activeMachinesCount / machines.length) * 100 : 0;
+    const healthScore = isNewCompany ? 0 : Math.min(100, Math.round((profitMargin * 0.4) + (machineHealthRatio * 0.4) + 20));
 
     // Calculate last 7 months of financial data dynamically
     const financialData = [];
@@ -156,24 +160,30 @@ export async function GET(req: NextRequest) {
 
     // 8. Construct AI insights/recommendations
     const recommendations = [];
-    if (lowStockAlerts.length > 0) {
+    if (isNewCompany) {
       recommendations.push(
-        `Critical: Low stock detected for ${lowStockAlerts[0].name} (${lowStockAlerts[0].currentStock} ${lowStockAlerts[0].unit} left). Reorder recommended today.`
-      );
-    }
-    if (maintenanceMachinesCount > 0) {
-      recommendations.push(
-        `Machine optimization: ${maintenanceMachinesCount} machine(s) are undergoing maintenance. Rearrange BOM processing routes.`
-      );
-    }
-    if (profitMargin < 20) {
-      recommendations.push(
-        "Margin improvement: High material expense rates are limiting margins. Analyze alternative suppliers in the suppliers dashboard."
+        "Welcome to FactoryOS! Initialize your dashboard by adding products, cataloging raw materials, or configuring machines."
       );
     } else {
-      recommendations.push(
-        "Operating smoothly: Factory lines are functioning at optimal capacities. Material demand forecasts project steady sales flow."
-      );
+      if (lowStockAlerts.length > 0) {
+        recommendations.push(
+          `Critical: Low stock detected for ${lowStockAlerts[0].name} (${lowStockAlerts[0].currentStock} ${lowStockAlerts[0].unit} left). Reorder recommended today.`
+        );
+      }
+      if (maintenanceMachinesCount > 0) {
+        recommendations.push(
+          `Machine optimization: ${maintenanceMachinesCount} machine(s) are undergoing maintenance. Rearrange BOM processing routes.`
+        );
+      }
+      if (revenue > 0 && profitMargin < 20) {
+        recommendations.push(
+          "Margin improvement: High material expense rates are limiting margins. Analyze alternative suppliers in the suppliers dashboard."
+        );
+      } else if (revenue > 0) {
+        recommendations.push(
+          "Operating smoothly: Factory lines are functioning at optimal capacities. Material demand forecasts project steady sales flow."
+        );
+      }
     }
 
     return NextResponse.json({

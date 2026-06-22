@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, UserCheck, UserX, DollarSign } from 'lucide-react';
+import { Users, Plus, UserCheck, UserX, IndianRupee } from 'lucide-react';
 import { TableSkeleton } from '@/components/skeleton';
 
 interface Attendance {
@@ -123,8 +123,8 @@ export default function EmployeesPage() {
           <UserCheck className="h-6 w-6 text-emerald-500" />
         </div>
         <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
-          <div><div className="text-[10px] font-bold text-muted-foreground uppercase">Monthly Payroll</div><div className="text-xl font-bold mt-1">${totalPayroll.toLocaleString()}</div></div>
-          <DollarSign className="h-6 w-6 text-amber-400" />
+          <div><div className="text-[10px] font-bold text-muted-foreground uppercase">Monthly Payroll</div><div className="text-xl font-bold mt-1">₹{totalPayroll.toLocaleString()}</div></div>
+          <IndianRupee className="h-6 w-6 text-amber-400" />
         </div>
       </div>
 
@@ -168,7 +168,7 @@ export default function EmployeesPage() {
                       <div>{emp.email || '—'}</div>
                       <div className="text-[10px]">{emp.phone || '—'}</div>
                     </td>
-                    <td className="p-4 font-bold">${emp.salary.toLocaleString()}</td>
+                    <td className="p-4 font-bold">₹{emp.salary.toLocaleString()}</td>
                     <td className="p-4">
                       {todayAtt ? (
                         <span className={`rounded-lg px-2 py-0.5 text-[9px] font-bold ${
@@ -249,7 +249,7 @@ export default function EmployeesPage() {
                   <input value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. SMT Operator" className="w-full h-9 border border-border rounded-xl bg-secondary/20 px-3 focus:outline-none" />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold">Monthly Salary ($)</label>
+                  <label className="font-semibold">Monthly Salary (₹)</label>
                   <input type="number" value={salary} onChange={e => setSalary(e.target.value)} placeholder="2800" className="w-full h-9 border border-border rounded-xl bg-secondary/20 px-3 focus:outline-none" />
                 </div>
               </div>

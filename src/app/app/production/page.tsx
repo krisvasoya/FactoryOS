@@ -301,7 +301,7 @@ export default function ProductionPage() {
                       )}
                     </td>
                     <td className="p-4 font-bold text-foreground">{order.quantity} pcs</td>
-                    <td className="p-4 font-medium text-foreground">${order.cost.toFixed(2)}</td>
+                    <td className="p-4 font-medium text-foreground">₹{order.cost.toFixed(2)}</td>
                     <td className="p-4">
                       <span className={`rounded-lg px-2 py-0.5 text-[9px] font-bold ${
                         order.status === 'Completed'

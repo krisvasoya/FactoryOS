@@ -9,7 +9,7 @@ const manufacturingInsights = [
   "Machine utilization data shows SMT Assembly Line 01 averaging 94% efficiency. Scheduling a preventive maintenance window during the upcoming weekend would minimize production disruption.",
   "Sales trend analysis indicates Q2 orders are up 14% YoY. Recommend pre-positioning raw material stock for Smart Thermostat T1 by 20% to meet projected demand.",
   "Supplier delivery performance for Silicon Valley Components shows consistent on-time rates. Their current pricing is competitive — consider extending your purchase agreement for improved lead times.",
-  "Running a rough cost-benefit on your current BOM: Smart Thermostat T1 materials cost $42.50 against a $149.99 sell price yields a strong 71.7% gross margin. Monitor labor and overhead allocations.",
+  "Running a rough cost-benefit on your current BOM: Smart Thermostat T1 materials cost ₹42.50 against a ₹149.99 sell price yields a strong 71.7% gross margin. Monitor labor and overhead allocations.",
   "Production waste tracking shows near-zero scrap on SMT line. This is excellent. However, plastic injection yields could benefit from mold temperature calibration to reduce flash defects.",
   "Cash flow analysis: Accounts receivable from Global Electro-Distributors is within net-30 terms. Ensuring timely follow-up on invoices due next week will maintain healthy cash conversion cycle.",
 ];
@@ -26,7 +26,7 @@ function getMockResponse(prompt: string): string {
   }
   
   if (lower.includes('sales') || lower.includes('revenue') || lower.includes('forecast')) {
-    return "📈 Sales Forecast: Based on current confirmed order volume and pipeline signals, I project monthly revenue to maintain above $14,000 for the next 60 days. However, LED shortages could constrain production output by up to 30% if not restocked by end of week. I recommend accelerating the next sales cycle discussion to lock in orders while production capacity is available.";
+    return "📈 Sales Forecast: Based on current confirmed order volume and pipeline signals, I project monthly revenue to maintain above ₹14,000 for the next 60 days. However, LED shortages could constrain production output by up to 30% if not restocked by end of week. I recommend accelerating the next sales cycle discussion to lock in orders while production capacity is available.";
   }
   
   if (lower.includes('supplier') || lower.includes('purchase') || lower.includes('vendor')) {
@@ -34,7 +34,7 @@ function getMockResponse(prompt: string): string {
   }
   
   if (lower.includes('profit') || lower.includes('margin') || lower.includes('finance')) {
-    return "💰 Financial Intelligence: Current gross margin on Smart Thermostat T1 stands at approximately 71.7% (sell price $149.99 vs materials cost $42.50). Operating expenses including salaries ($3,200), utilities ($850), and raw material purchases ($4,500) total $8,550 this period. Net profitability remains strong. I recommend reviewing overhead allocation and exploring automation opportunities to further improve contribution margins.";
+    return "💰 Financial Intelligence: Current gross margin on Smart Thermostat T1 stands at approximately 71.7% (sell price ₹149.99 vs materials cost ₹42.50). Operating expenses including salaries (₹3,200), utilities (₹850), and raw material purchases (₹4,500) total ₹8,550 this period. Net profitability remains strong. I recommend reviewing overhead allocation and exploring automation opportunities to further improve contribution margins.";
   }
   
   if (lower.includes('production') || lower.includes('bom') || lower.includes('assembly')) {
@@ -42,7 +42,7 @@ function getMockResponse(prompt: string): string {
   }
   
   if (lower.includes('employee') || lower.includes('attendance') || lower.includes('staff')) {
-    return "👥 Workforce Summary: Production department is at full staffing. Current attendance shows Vikram Singh (Production Worker) clocked in at 08:00. Recommend cross-training 1-2 additional workers on SMT line operation to reduce single-point dependency. Monthly payroll projection is $2,800 for direct labor.";
+    return "👥 Workforce Summary: Production department is at full staffing. Current attendance shows Vikram Singh (Production Worker) clocked in at 08:00. Recommend cross-training 1-2 additional workers on SMT line operation to reduce single-point dependency. Monthly payroll projection is ₹2,800 for direct labor.";
   }
   
   // Default rotating insight
@@ -66,55 +66,64 @@ export async function POST(req: NextRequest) {
 
     let reply: string;
 
-    // Try OpenAI if key is configured
-    const openaiKey = process.env.OPENAI_API_KEY;
-    if (openaiKey && openaiKey.startsWith('sk-')) {
-      try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openaiKey}`,
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
-              {
-                role: 'system',
-                content: `You are FactoryOS Co-Pilot, an AI assistant embedded inside a manufacturing ERP system. 
-                You help factory owners and managers with:
-                - Inventory analysis and forecasting
-                - Production planning and BOM optimization  
-                - Machine maintenance scheduling
-                - Financial insights and cash flow analysis
-                - Supplier recommendations
-                - Employee productivity insights
-                
-                Keep responses concise (2-4 sentences), practical, and data-driven. 
-                Use relevant emojis sparingly. Always relate answers to manufacturing operations.`,
-              },
-              {
-                role: 'user',
-                content: prompt,
-              },
-            ],
-            max_tokens: 300,
-            temperature: 0.7,
-          }),
-        });
+    // Check if new company (no products registered)
+    const productCount = await db.product.count({
+      where: { companyId: session.companyId, deletedAt: null }
+    });
 
-        if (response.ok) {
-          const data = await response.json();
-          reply = data.choices?.[0]?.message?.content || getMockResponse(prompt);
-        } else {
+    if (productCount === 0) {
+      reply = "Welcome to FactoryOS! Please get started by adding your first finished product, cataloging raw materials, or enrolling employees so I can assist you with real-time operations, inventory forecasts, and financial summaries.";
+    } else {
+      // Try OpenAI if key is configured
+      const openaiKey = process.env.OPENAI_API_KEY;
+      if (openaiKey && openaiKey.startsWith('sk-')) {
+        try {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${openaiKey}`,
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              messages: [
+                {
+                  role: 'system',
+                  content: `You are FactoryOS Co-Pilot, an AI assistant embedded inside a manufacturing ERP system. 
+                  You help factory owners and managers with:
+                  - Inventory analysis and forecasting
+                  - Production planning and BOM optimization  
+                  - Machine maintenance scheduling
+                  - Financial insights and cash flow analysis
+                  - Supplier recommendations
+                  - Employee productivity insights
+                  
+                  Keep responses concise (2-4 sentences), practical, and data-driven. 
+                  Use relevant emojis sparingly. Always relate answers to manufacturing operations.`,
+                },
+                {
+                  role: 'user',
+                  content: prompt,
+                },
+              ],
+              max_tokens: 300,
+              temperature: 0.7,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            reply = data.choices?.[0]?.message?.content || getMockResponse(prompt);
+          } else {
+            reply = getMockResponse(prompt);
+          }
+        } catch {
           reply = getMockResponse(prompt);
         }
-      } catch {
+      } else {
+        // Use intelligent mock responses
         reply = getMockResponse(prompt);
       }
-    } else {
-      // Use intelligent mock responses
-      reply = getMockResponse(prompt);
     }
 
     // Save conversation to DB

@@ -7,7 +7,7 @@ import {
   TrendingDown,
   Activity,
   AlertTriangle,
-  DollarSign,
+  IndianRupee,
   Cpu,
   RefreshCw,
   Boxes,
@@ -159,16 +159,16 @@ export default function DashboardPage() {
   const metrics = [
     {
       label: 'Total Revenue',
-      value: `$${data.metrics.monthlySales.toLocaleString()}`,
+      value: `₹${data.metrics.monthlySales.toLocaleString()}`,
       change: '24.5% vs last month',
       positive: true,
-      icon: DollarSign,
+      icon: IndianRupee,
       iconColor: 'var(--status-success-text)',
       iconBg: 'var(--status-success-bg)',
     },
     {
       label: 'Net Profit',
-      value: `$${data.metrics.netProfit.toLocaleString()}`,
+      value: `₹${data.metrics.netProfit.toLocaleString()}`,
       change: '18.3% vs last month',
       positive: true,
       icon: TrendingUp,
@@ -297,7 +297,7 @@ export default function DashboardPage() {
           <div style={{ height: 220 }}>
             {!hasFinanceData ? (
               <div className="flex h-full flex-col items-center justify-center border border-dashed border-border rounded-xl bg-secondary/5 p-4 text-center">
-                <DollarSign className="h-8 w-8 text-muted-foreground/50 mb-1.5" />
+                <IndianRupee className="h-8 w-8 text-muted-foreground/50 mb-1.5" />
                 <p className="text-xs font-semibold text-foreground">No financial activity recorded</p>
                 <p className="text-[10px] text-muted-foreground max-w-xs mx-auto mt-0.5">Invoices and expenses registered for this month will generate real-time revenue audits here.</p>
               </div>
@@ -306,7 +306,7 @@ export default function DashboardPage() {
                 <BarChart data={data.financialData} barSize={10} barGap={2} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${v}`} />
                   <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'var(--hover-bg)' }} />
                   <Bar dataKey="Revenue" fill="var(--chart-primary)" radius={[3, 3, 0, 0]} />
                   <Bar dataKey="Expenses" fill="var(--chart-secondary)" radius={[3, 3, 0, 0]} />
@@ -437,7 +437,7 @@ export default function DashboardPage() {
                       }}
                     >
                       {isProduction && <Cpu className="h-3.5 w-3.5" style={{ color: 'var(--status-info-text)' }} />}
-                      {isFinance    && <DollarSign className="h-3.5 w-3.5" style={{ color: 'var(--status-success-text)' }} />}
+                      {isFinance    && <IndianRupee className="h-3.5 w-3.5" style={{ color: 'var(--status-success-text)' }} />}
                       {isInventory  && <Boxes className="h-3.5 w-3.5" style={{ color: 'var(--status-warning-text)' }} />}
                       {!isProduction && !isFinance && !isInventory && <ClipboardList className="h-3.5 w-3.5" style={{ color: 'var(--muted-foreground)' }} />}
                     </div>

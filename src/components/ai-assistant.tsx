@@ -102,7 +102,7 @@ export default function AIAssistant() {
           ...prev,
           {
             sender: 'ai',
-            text: `📁 parsed Invoice INV-9902 from "Silicon Components Corp". Total amount is $3,990.00. I can register this in your Purchases ledger now. Should I proceed?`,
+            text: `📁 parsed Invoice INV-9902 from "Silicon Components Corp". Total amount is ₹3,990.00. I can register this in your Purchases ledger now. Should I proceed?`,
             date: new Date(),
           },
         ]);
@@ -253,7 +253,7 @@ export default function AIAssistant() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Grand Total:</span>
-                      <span className="font-bold text-primary">${ocrResult.totalAmount.toFixed(2)}</span>
+                      <span className="font-bold text-primary">₹{ocrResult.totalAmount.toFixed(2)}</span>
                     </div>
                   </div>
                 )}

@@ -161,8 +161,8 @@ export default function ProductsPage() {
                     </td>
                     <td className="p-4 font-mono font-medium">{prod.sku}</td>
                     <td className="p-4 text-muted-foreground">{prod.unit}</td>
-                    <td className="p-4 font-bold text-foreground">${prod.price.toFixed(2)}</td>
-                    <td className="p-4 text-muted-foreground">${prod.cost.toFixed(2)}</td>
+                    <td className="p-4 font-bold text-foreground">₹{prod.price.toFixed(2)}</td>
+                    <td className="p-4 text-muted-foreground">₹{prod.cost.toFixed(2)}</td>
                     <td className="p-4">
                       <span className="rounded-lg bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-500">
                         {marginPercent}% Margin
@@ -245,7 +245,7 @@ export default function ProductsPage() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold">Price ($) *</label>
+                  <label className="font-semibold">Price (₹) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -257,7 +257,7 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold">Cost ($) *</label>
+                  <label className="font-semibold">Cost (₹) *</label>
                   <input
                     type="number"
                     step="0.01"

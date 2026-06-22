@@ -154,7 +154,7 @@ export default function RawMaterialsPage() {
                     </div>
                   </td>
                   <td className="p-4 font-mono font-medium">{mat.sku}</td>
-                  <td className="p-4 font-bold text-foreground">${mat.cost.toFixed(2)}</td>
+                  <td className="p-4 font-bold text-foreground">₹{mat.cost.toFixed(2)}</td>
                   <td className="p-4 text-muted-foreground">{mat.unit}</td>
                   <td className="p-4 font-medium">{mat.minStock} {mat.unit}</td>
                   <td className="p-4">
@@ -238,7 +238,7 @@ export default function RawMaterialsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold">Purchase Cost ($) *</label>
+                  <label className="font-semibold">Purchase Cost (₹) *</label>
                   <input
                     type="number"
                     step="0.001"

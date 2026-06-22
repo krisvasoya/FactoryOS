@@ -268,7 +268,7 @@ export default function MachinesPage() {
                       </div>
                       <div className="flex justify-between text-[10px] text-muted-foreground">
                         <span>Due: {new Date(log.scheduledAt).toLocaleDateString()}</span>
-                        {log.cost > 0 && <span>Value: ${log.cost.toFixed(2)}</span>}
+                        {log.cost > 0 && <span>Value: ₹{log.cost.toFixed(2)}</span>}
                       </div>
 
                       {!log.completedAt && (
@@ -346,7 +346,7 @@ export default function MachinesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold">Estimated Repair Cost ($)</label>
+                  <label className="font-semibold">Estimated Repair Cost (₹)</label>
                   <input
                     type="number"
                     value={cost}
