@@ -149,17 +149,29 @@ graph TD
 ### 2. Scroll-Free Light Mode Registration Portal
 ![Registration Portal](assets/register_page.png)
 
-### 3. Dark Mode Dashboard (Executive View)
-![Dashboard Top](assets/dashboard_top.png)
+### 3. Light Mode Executive Dashboard Overview
+![Dashboard Overview](assets/dashboard.png)
 
-### 4. Production Analytics & AI Insights
-![Dashboard Bottom](assets/dashboard_bottom.png)
+### 4. Premium Dark Mode Theme Interface
+![Dark Mode Theme](assets/dark_mode.png)
 
-### 5. Intelligent Warehouse Logistics
-![Warehouse Logistics](assets/warehouse.png)
+### 5. Warehouse & Inventory Level Tracker
+![Inventory Level Tracker](assets/inventory.png)
 
-### 6. PCB Robotic Assembly
-![PCB Assembly](assets/pcb_assembly.png)
+### 6. Billing & Industrial Invoice Generator Layout
+![Invoice Layout Setup](assets/bill.png)
+
+### 7. Double-Entry Accounts & Finance Ledger
+![Accounts Ledger](assets/finance.png)
+
+### 8. Analytics & CSV/PDF Report Exports
+![Report Exports](assets/reports.png)
+
+### 9. Tenant & Layout Settings Control Room
+![Tenant Settings](assets/settings.png)
+
+### 10. Shimmer Skeleton Loading & Status Indicators
+![Skeleton Loading](assets/skeleton.png)
 
 ---
 

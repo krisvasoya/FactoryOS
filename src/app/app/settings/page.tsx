@@ -72,7 +72,7 @@ export default function SettingsPage() {
         setMembers(data.members);
 
         // Load Invoice Layout Settings
-        const layoutSetting = data.settings?.find((s: any) => s.key === 'billing_template_layout');
+        const layoutSetting = data.settings?.find((s: { key: string; value: string }) => s.key === 'billing_template_layout');
         if (layoutSetting) {
           try {
             const layout = JSON.parse(layoutSetting.value);
