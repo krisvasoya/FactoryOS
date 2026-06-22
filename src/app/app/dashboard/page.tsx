@@ -11,6 +11,7 @@ import { ActivityList } from '@/features/dashboard/components/ActivityList';
 import { AiInsights } from '@/features/dashboard/components/AiInsights';
 import { MachineStatus } from '@/features/dashboard/components/MachineStatus';
 import { OperationsHealth } from '@/features/dashboard/components/OperationsHealth';
+import { AttendanceWidget } from '@/features/dashboard/components/AttendanceWidget';
 
 export default function DashboardPage() {
   const {
@@ -81,6 +82,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <ActivityList data={data} formatLogTitle={formatLogTitle} />
         <div className="space-y-4">
+          <AttendanceWidget />
           <AiInsights data={data} />
           <MachineStatus data={data} />
           <OperationsHealth data={data} />
