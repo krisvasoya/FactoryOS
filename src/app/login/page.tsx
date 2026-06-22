@@ -154,25 +154,27 @@ export default function LoginPage() {
         </form>
 
         {/* Demo Fast Triggers */}
-        <div className="mt-8 border-t border-slate-800 pt-6">
-          <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-3 text-center">
-            Demo Console Portals
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => handleDemoLogin('owner@factoryos.com')}
-              className="px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/40 text-[10px] font-semibold text-sky-400 hover:bg-slate-800/40 transition-colors text-center cursor-pointer"
-            >
-              Owner Portal (Arjun)
-            </button>
-            <button
-              onClick={() => handleDemoLogin('production@factoryos.com')}
-              className="px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/40 text-[10px] font-semibold text-indigo-400 hover:bg-slate-800/40 transition-colors text-center cursor-pointer"
-            >
-              Production Portal (Amit)
-            </button>
+        {process.env.NODE_ENV !== 'production' && (
+          <div className="mt-8 border-t border-slate-800 pt-6">
+            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-3 text-center">
+              Demo Console Portals
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => handleDemoLogin('owner@factoryos.com')}
+                className="px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/40 text-[10px] font-semibold text-sky-400 hover:bg-slate-800/40 transition-colors text-center cursor-pointer"
+              >
+                Owner Portal (Arjun)
+              </button>
+              <button
+                onClick={() => handleDemoLogin('production@factoryos.com')}
+                className="px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/40 text-[10px] font-semibold text-indigo-400 hover:bg-slate-800/40 transition-colors text-center cursor-pointer"
+              >
+                Production Portal (Amit)
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-6 text-center text-xs">
           <span className="text-slate-500">Need to onboard your business? </span>

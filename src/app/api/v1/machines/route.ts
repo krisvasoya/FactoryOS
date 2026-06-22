@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { getSession, checkRole } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -40,6 +40,9 @@ export async function POST(req: NextRequest) {
     const { action } = body;
 
     if (action === 'createMaintenance') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Manager', 'Production'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { machineId, description, cost, scheduledAt } = body;
 
       if (!machineId || !description || !scheduledAt) {
@@ -85,6 +88,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'completeMaintenance') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Manager', 'Production'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { logId, machineId, notes } = body;
 
       if (!logId || !machineId) {

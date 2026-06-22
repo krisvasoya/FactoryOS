@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { getSession, checkRole } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -41,6 +41,9 @@ export async function POST(req: NextRequest) {
     const { action } = body;
 
     if (action === 'createEmployee') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Manager'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { name, email, phone, department, role, salary } = body;
 
       if (!name || !department) {
@@ -74,6 +77,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'markAttendance') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Manager', 'Production', 'Warehouse'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { employeeId, status } = body;
 
       if (!employeeId || !status) {

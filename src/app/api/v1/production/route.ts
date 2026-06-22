@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { getSession, checkRole } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -54,6 +54,9 @@ export async function POST(req: NextRequest) {
     const { action } = body; // "createBOM" or "createOrder" or "updateStatus"
 
     if (action === 'createBOM') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Manager', 'Production'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { productId, name, items } = body; // items: Array<{ rawMaterialId: string, quantity: number }>
 
       if (!productId || !name || !items || items.length === 0) {
@@ -78,6 +81,13 @@ export async function POST(req: NextRequest) {
         });
 
         for (const item of items) {
+          // Verify raw material belongs to company
+          const rawMaterial = await tx.rawMaterial.findFirst({
+            where: { id: item.rawMaterialId, companyId, deletedAt: null },
+          });
+          if (!rawMaterial) {
+            throw new Error(`Raw material not found: ${item.rawMaterialId}`);
+          }
           await tx.bOMItem.create({
             data: {
               bomId: newBom.id,
@@ -94,6 +104,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'createOrder') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Manager', 'Production'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { productId, bomId, machineId, quantity } = body;
 
       if (!productId || !bomId || !quantity) {
@@ -222,6 +235,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'updateStatus') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Manager', 'Production'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { orderId, status } = body; // "Completed", "Cancelled"
 
       if (!orderId || !status) {
@@ -249,6 +265,56 @@ export async function POST(req: NextRequest) {
             endDate: status === 'Completed' ? new Date() : null,
           },
         });
+
+        if (status === 'Cancelled' && existingOrder.status === 'InProgress') {
+          // Find default warehouse
+          const wh = await tx.warehouse.findFirst({
+            where: { companyId, deletedAt: null },
+          });
+          const warehouseId = wh ? wh.id : '';
+
+          const bomItems = await tx.bOMItem.findMany({
+            where: { bomId: existingOrder.bomId },
+            include: { rawMaterial: true },
+          });
+
+          for (const item of bomItems) {
+            const reqQty = item.quantity * existingOrder.quantity;
+
+            // Add back to warehouse inventory
+            const invItem = await tx.inventoryItem.findFirst({
+              where: { companyId, warehouseId, rawMaterialId: item.rawMaterialId, deletedAt: null },
+            });
+
+            if (invItem) {
+              await tx.inventoryItem.update({
+                where: { id: invItem.id },
+                data: { quantity: invItem.quantity + reqQty },
+              });
+            } else {
+              await tx.inventoryItem.create({
+                data: {
+                  companyId,
+                  warehouseId,
+                  rawMaterialId: item.rawMaterialId,
+                  quantity: reqQty,
+                },
+              });
+            }
+
+            // Log stock movement
+            await tx.stockMovement.create({
+              data: {
+                companyId,
+                destWarehouseId: warehouseId,
+                rawMaterialId: item.rawMaterialId,
+                quantity: reqQty,
+                type: 'Receive',
+                notes: `Restored from Cancelled Production Run (${existingOrder.id})`,
+              },
+            });
+          }
+        }
 
         if (status === 'Completed') {
           // Add finished goods to inventory!

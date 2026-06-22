@@ -102,6 +102,11 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Invalid role specified' }, { status: 400 });
       }
 
+      // Privilege escalation check: Admins cannot assign Admin roles
+      if (role === 'Admin' && session.role !== 'Owner') {
+        return NextResponse.json({ error: 'Only Owners can invite users with the Admin role' }, { status: 403 });
+      }
+
       const existingUser = await db.user.findFirst({
         where: { email: email.toLowerCase().trim(), deletedAt: null },
       });

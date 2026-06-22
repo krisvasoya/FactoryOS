@@ -2,9 +2,8 @@ import * as jose from 'jose';
 import bcrypt from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'fallback-super-secret-key-at-least-32-chars-long'
-);
+const secret = process.env.JWT_SECRET || (process.env.NODE_ENV === 'development' ? 'fallback-super-secret-key-at-least-32-chars-long' : undefined);
+export const JWT_SECRET = new TextEncoder().encode(secret || 'temporary-placeholder-secret-for-build-purposes-only-change-in-prod');
 
 export interface UserSession {
   userId: string;
@@ -26,6 +25,9 @@ export async function comparePasswords(password: string, hash: string): Promise<
 
 // Session JWT Handling
 export async function createSessionToken(user: UserSession): Promise<string> {
+  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    throw new Error("CRITICAL SECURITY ERROR: JWT_SECRET environment variable must be set in production.");
+  }
   return new jose.SignJWT({ ...user })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -34,6 +36,9 @@ export async function createSessionToken(user: UserSession): Promise<string> {
 }
 
 export async function verifySessionToken(token: string): Promise<UserSession | null> {
+  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    throw new Error("CRITICAL SECURITY ERROR: JWT_SECRET environment variable must be set in production.");
+  }
   try {
     const { payload } = await jose.jwtVerify(token, JWT_SECRET);
     return payload as unknown as UserSession;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { getSession, checkRole } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -50,6 +50,9 @@ export async function POST(req: NextRequest) {
     const { action } = body; // "createInvoice" or "createExpense" or "recordPayment"
 
     if (action === 'createInvoice') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Accountant', 'Sales'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { customerId, subTotal, dueDate } = body;
 
       if (!customerId || !subTotal || !dueDate) {
@@ -103,6 +106,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'createExpense') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Accountant'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { category, amount, description, date } = body;
 
       if (!category || !amount) {
@@ -140,6 +146,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === 'recordPayment') {
+      if (!checkRole(session.role, ['Owner', 'Admin', 'Accountant'])) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
       const { invoiceId, amount, method, reference } = body;
 
       if (!invoiceId || !amount || !method) {
@@ -170,10 +179,23 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        // Update invoice status to paid
+        // Sum existing payments for this invoice
+        const existingPayments = await tx.payment.findMany({
+          where: { invoiceId, deletedAt: null },
+        });
+        const totalPaid = existingPayments.reduce((acc, p) => acc + p.amount, 0) + amountVal;
+
+        let newStatus = 'Unpaid';
+        if (totalPaid >= invoice.totalAmount) {
+          newStatus = 'Paid';
+        } else if (totalPaid > 0) {
+          newStatus = 'PartiallyPaid';
+        }
+
+        // Update invoice status
         await tx.invoice.update({
           where: { id: invoiceId },
-          data: { status: 'Paid' },
+          data: { status: newStatus },
         });
 
         return pay;

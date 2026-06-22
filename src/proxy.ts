@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as jose from 'jose';
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'fallback-super-secret-key-at-least-32-chars-long'
-);
+import { JWT_SECRET } from './lib/auth';
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
