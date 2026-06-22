@@ -301,170 +301,238 @@ function LoginContent() {
         </div>
       </div>
 
-      {/* Right Column: Premium Cyber-Physical Factory Visualizer */}
-      <div className="hidden lg:col-span-7 lg:flex flex-col items-center justify-center p-8 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] bg-size-[16px_16px] bg-slate-50/50 relative overflow-hidden">
-        {/* Soft atmospheric gradient backdrops */}
-        <div className="absolute top-1/3 left-1/3 w-[35rem] h-[35rem] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/3 w-[30rem] h-[30rem] bg-sky-400/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
+      {/* Right Column: Premium Interactive 3D Isometric Factory Visualizer */}
+      <div className="hidden lg:col-span-7 lg:flex flex-col items-center justify-center p-8 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] bg-size-[24px_24px] bg-slate-50 relative overflow-hidden">
+        {/* Colorful glowing ambient lights */}
+        <div className="absolute top-1/4 left-1/3 w-xl h-144 bg-indigo-500/10 rounded-full blur-[130px] pointer-events-none animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-lg h-128 bg-sky-400/10 rounded-full blur-[110px] pointer-events-none animate-pulse" />
 
-        {/* Console Container */}
-        <div className="relative w-full max-w-xl aspect-4/3 rounded-3xl border border-slate-200 bg-white/70 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between overflow-hidden">
+        {/* Outer card frame matching mockup */}
+        <div className="relative w-full max-w-xl aspect-4/3 rounded-3xl border border-slate-200/80 bg-white/70 backdrop-blur-xl p-6 shadow-2xl flex flex-col justify-between overflow-hidden">
           
-          {/* Header Status Bar */}
+          {/* Top Info Bar */}
           <div className="flex justify-between items-center z-10 w-full">
-            <div className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-[9px] font-extrabold text-emerald-600 flex items-center gap-1.5 tracking-wider">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-              LIVE TELEMETRY NODE
+            {/* SYSTEM ONLINE Badge */}
+            <div className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-[9px] font-bold text-emerald-600 flex items-center gap-1.5 uppercase tracking-widest">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              CYBER-PHYSICAL INTERFACE
             </div>
-            
-            {/* Interactive Slide Controls */}
-            <div className="flex gap-2">
+
+            {/* Slide Indicators */}
+            <div className="flex gap-1.5">
               {slides.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
-                    index === currentSlide ? 'w-8 bg-indigo-600' : 'w-2.5 bg-slate-300 hover:bg-slate-400'
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    index === currentSlide ? 'w-8 bg-indigo-600' : 'w-2 bg-slate-300 hover:bg-slate-400'
                   }`}
-                  aria-label={`Show telemetry view ${index + 1}`}
+                  aria-label={`Switch to slide ${index + 1}`}
                 />
               ))}
             </div>
           </div>
 
-          {/* Connected Pipelines Map */}
-          <div className="grow w-full z-10 my-6 relative flex flex-col items-center justify-center min-h-[220px]">
-            {/* SVG Connecting Flow Lines */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" xmlns="http://www.w3.org/2000/svg">
+          {/* Middle 3D Isometric Factory Illustration Area */}
+          <div className="grow flex items-center justify-center w-full z-10 my-4 min-h-[220px] relative">
+            <svg viewBox="0 0 400 240" className="w-full h-full max-h-[210px] overflow-visible drop-shadow-xl select-none" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.8" />
+                <style>
+                  {`
+                    @keyframes isometric-float {
+                      0%, 100% { transform: translateY(0px); }
+                      50% { transform: translateY(-5px); }
+                    }
+                    @keyframes pulse-signal {
+                      0%, 100% { fill-opacity: 0.3; stroke-width: 1.5; }
+                      50% { fill-opacity: 0.7; stroke-width: 3; }
+                    }
+                    @keyframes rotate-iso-gear {
+                      to { transform: rotate(360deg); }
+                    }
+                    @keyframes flow-iso-line {
+                      to { stroke-dashoffset: -30; }
+                    }
+                    .iso-float { animation: isometric-float 5s ease-in-out infinite; }
+                    .iso-float-delayed { animation: isometric-float 5s ease-in-out infinite; animation-delay: 2.5s; }
+                    .signal-glow { animation: pulse-signal 2s ease-in-out infinite; }
+                    .gear-spin { animation: rotate-iso-gear 15s linear infinite; transform-origin: center; }
+                    .conveyor-belt { stroke-dasharray: 6 4; animation: flow-iso-line 2.5s linear infinite; }
+                  `}
+                </style>
+                <linearGradient id="gradient-top" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#818cf8" />
+                  <stop offset="100%" stopColor="#312e81" />
+                </linearGradient>
+                <linearGradient id="gradient-side-light" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#4f46e5" />
+                  <stop offset="100%" stopColor="#1e1b4b" />
+                </linearGradient>
+                <linearGradient id="gradient-side-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#3730a3" />
+                  <stop offset="100%" stopColor="#111827" />
                 </linearGradient>
               </defs>
-              
-              {/* Core pipeline path */}
-              <path
-                d="M 60,110 C 140,40 260,40 340,110"
-                fill="none"
-                stroke="url(#flowGrad)"
-                strokeWidth="2.5"
-                strokeDasharray="6 6"
-                className="animate-[dash_15s_linear_infinite]"
-              />
-              <path
-                d="M 340,110 C 260,180 140,180 60,110"
-                fill="none"
-                stroke="url(#flowGrad)"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-                className="animate-[dash_25s_linear_reverse_infinite]"
-              />
+
+              {/* Faint grid floor guidelines */}
+              <g stroke="#e2e8f0" strokeWidth="0.8" opacity="0.6">
+                <line x1="50" y1="200" x2="350" y2="50" />
+                <line x1="50" y1="50" x2="350" y2="200" />
+                <line x1="200" y1="20" x2="200" y2="220" />
+              </g>
+
+              {/* Connecting conveyor network */}
+              <g fill="none" stroke="#818cf8" strokeWidth="2.5" strokeLinecap="round">
+                {/* Automation path */}
+                <path d="M 80,140 L 200,90 L 320,140" className="conveyor-belt" stroke="#c7d2fe" />
+                {/* AI core linking path */}
+                <path d="M 200,90 L 200,165" className="conveyor-belt" stroke="#6366f1" />
+              </g>
+
+              {/* Node 1: Automation Tower (Left) */}
+              <g className="iso-float" opacity={currentSlide === 0 ? "1" : "0.55"}>
+                {/* Base Shadow */}
+                <polygon points="60,150 95,135 110,142 75,157" fill="#e2e8f0" />
+                {/* 3D Box structure */}
+                {/* Left Side */}
+                <polygon points="60,150 75,157 75,127 60,120" fill="url(#gradient-side-light)" />
+                {/* Right Side */}
+                <polygon points="75,157 95,147 95,117 75,127" fill="url(#gradient-side-dark)" />
+                {/* Top Cap */}
+                <polygon points="60,120 75,127 95,117 80,110" fill="url(#gradient-top)" />
+                
+                {/* Floating Status Ring */}
+                <ellipse cx="77" cy="98" rx="14" ry="7" fill="none" stroke="#6366f1" strokeWidth="1.5" className="signal-glow" />
+              </g>
+
+              {/* Node 2: Database Storage Stack (Right) */}
+              <g className="iso-float-delayed" opacity={currentSlide === 1 ? "1" : "0.55"}>
+                {/* Base Shadow */}
+                <polygon points="290,150 325,135 340,142 305,157" fill="#e2e8f0" />
+                {/* Bottom Disc */}
+                <polygon points="290,150 305,157 325,147 310,140" fill="#cbd5e1" />
+                
+                {/* Storage Plates */}
+                {/* Plate 1 */}
+                <polygon points="290,140 305,147 325,137 310,130" fill="url(#gradient-side-light)" />
+                <polygon points="305,147 325,137 325,134 305,144" fill="url(#gradient-side-dark)" />
+                {/* Plate 2 */}
+                <polygon points="290,125 305,132 325,122 310,115" fill="url(#gradient-side-light)" />
+                <polygon points="305,132 325,122 325,119 305,129" fill="url(#gradient-side-dark)" />
+                {/* Top Plate cap */}
+                <polygon points="290,110 305,117 325,107 310,100" fill="url(#gradient-top)" />
+
+                {/* Blinking Sensor */}
+                <circle cx="307" cy="107" r="2.5" fill="#f43f5e" className="signal-glow" />
+              </g>
+
+              {/* Node 3: AI Central Processing Core (Middle) */}
+              <g className="iso-float" opacity={currentSlide === 3 ? "1" : "0.75"}>
+                {/* Isometric Cube base */}
+                <polygon points="175,115 200,127 225,115 200,103" fill="#1e1b4b" opacity="0.3" />
+                
+                {/* Floating Core */}
+                {/* Left Side */}
+                <polygon points="180,95 200,105 200,80 180,70" fill="#312e81" />
+                {/* Right Side */}
+                <polygon points="200,105 220,95 220,70 200,80" fill="#4338ca" />
+                {/* Top Cap */}
+                <polygon points="180,70 200,80 220,70 200,60" fill="#6366f1" />
+
+                {/* Energy Rings around the Core */}
+                <ellipse cx="200" cy="83" rx="35" ry="16" fill="none" stroke="#38bdf8" strokeWidth="2.5" strokeDasharray="15 15" className="conveyor-belt" />
+                <ellipse cx="200" cy="98" rx="25" ry="12" fill="none" stroke="#60a5fa" strokeWidth="1.5" strokeDasharray="8 6" className="conveyor-belt" />
+              </g>
+
+              {/* Node 4: Cashflow / Fin System (Bottom Center) */}
+              <g className="iso-float-delayed" opacity={currentSlide === 2 ? "1" : "0.55"}>
+                {/* Base Shadow */}
+                <polygon points="175,190 200,202 225,190 200,178" fill="#e2e8f0" />
+                
+                {/* Financial bar charts isometric */}
+                {/* Bar 1 */}
+                <polygon points="185,185 193,189 193,165 185,161" fill="#10b981" />
+                <polygon points="193,189 201,185 201,161 193,165" fill="#047857" />
+                <polygon points="185,161 193,165 201,161 193,157" fill="#34d399" />
+                
+                {/* Bar 2 */}
+                <polygon points="203,175 211,179 211,145 203,141" fill="#10b981" />
+                <polygon points="211,179 219,175 219,141 211,145" fill="#047857" />
+                <polygon points="203,141 211,145 219,141 211,137" fill="#34d399" />
+              </g>
             </svg>
 
-            {/* Layout Cards */}
-            <div className="w-full h-full flex items-center justify-around relative">
-              {/* Node 1: Automation */}
-              <div className={`p-4 rounded-2xl border transition-all duration-500 w-36 ${
-                currentSlide === 0 
-                  ? 'bg-indigo-600/5 border-indigo-500 shadow-lg scale-105 translate-y-[-8px]' 
-                  : 'bg-white/90 border-slate-200/60 opacity-60 shadow-xs'
-              }`}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-[9px] font-extrabold text-slate-400">NODE_01</span>
-                  <span className={`h-1.5 w-1.5 rounded-full ${currentSlide === 0 ? 'bg-indigo-600 animate-pulse' : 'bg-slate-400'}`} />
-                </div>
-                <h4 className="text-[10px] font-bold text-slate-800">AUTOMATION</h4>
-                <div className="h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
-                  <div className="h-full bg-indigo-500 rounded-full" style={{ width: '85%' }}></div>
-                </div>
-                <p className="text-[8px] text-slate-500 mt-1 font-medium">85% Dispatch Rate</p>
+            {/* Micro Floating Metric Card Overlay */}
+            <div className="absolute top-8 right-6 bg-white/90 border border-slate-100 p-2.5 rounded-xl shadow-lg flex items-center gap-2 select-none pointer-events-none float-card-1">
+              <div className="h-6 w-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
+                ↑
               </div>
-
-              {/* Node 2: Core AI Center */}
-              <div className={`p-4 rounded-2xl border transition-all duration-500 w-40 ${
-                currentSlide === 3 
-                  ? 'bg-slate-900 border-slate-800 text-white shadow-xl scale-110 translate-y-[-10px]' 
-                  : 'bg-white/90 border-slate-200/60 opacity-80 shadow-xs'
-              }`}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-[9px] font-extrabold text-indigo-400">AI_CORE</span>
-                  <span className={`h-1.5 w-1.5 rounded-full ${currentSlide === 3 ? 'bg-emerald-400 animate-ping' : 'bg-slate-400'}`} />
-                </div>
-                <h4 className={`text-[10px] font-extrabold ${currentSlide === 3 ? 'text-white' : 'text-slate-800'}`}>CO-PILOT ENGINE</h4>
-                <div className="flex items-center gap-1.5 mt-2.5">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span className="text-[9px] font-mono font-bold text-emerald-400">99.2% Accurate</span>
-                </div>
-                <p className={`text-[8px] mt-1 ${currentSlide === 3 ? 'text-slate-400' : 'text-slate-500'} font-medium`}>Yield calibrated</p>
+              <div>
+                <span className="text-[7px] text-slate-400 block uppercase font-bold tracking-wider">Yield Margin</span>
+                <span className="text-[10px] font-extrabold text-slate-800">94.2%</span>
               </div>
+            </div>
 
-              {/* Node 3: Finance Ledger */}
-              <div className={`p-4 rounded-2xl border transition-all duration-500 w-36 ${
-                currentSlide === 2 
-                  ? 'bg-emerald-600/5 border-emerald-500 shadow-lg scale-105 translate-y-[-8px]' 
-                  : 'bg-white/90 border-slate-200/60 opacity-60 shadow-xs'
-              }`}>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-[9px] font-extrabold text-slate-400">NODE_03</span>
-                  <span className={`h-1.5 w-1.5 rounded-full ${currentSlide === 2 ? 'bg-emerald-600 animate-pulse' : 'bg-slate-400'}`} />
-                </div>
-                <h4 className="text-[10px] font-bold text-slate-800">FINANCES</h4>
-                <div className="h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '92%' }}></div>
-                </div>
-                <p className="text-[8px] text-emerald-600 mt-1 font-bold">+14.2% MoM</p>
+            <div className="absolute bottom-8 left-6 bg-white/90 border border-slate-100 p-2.5 rounded-xl shadow-lg flex items-center gap-2 select-none pointer-events-none float-card-2">
+              <div className="h-6 w-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-[10px]">
+                ★
+              </div>
+              <div>
+                <span className="text-[7px] text-slate-400 block uppercase font-bold tracking-wider">Status Isolate</span>
+                <span className="text-[10px] font-extrabold text-slate-800">Active</span>
               </div>
             </div>
           </div>
 
-          {/* Bottom Card Content Info Panel */}
-          <div className="relative z-10 mt-auto bg-white/90 border border-slate-200 p-5 rounded-2xl shadow-lg space-y-4">
-            {slides.map((slide, index) => (
-              <div
-                key={index}
-                className={`transition-all duration-500 ${
-                  index === currentSlide ? 'block opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-2'
-                }`}
-              >
-                <div className="flex items-center gap-1.5 text-indigo-600 font-bold text-xs uppercase tracking-wider mb-1">
-                  <slide.icon className="h-4 w-4 text-indigo-600 animate-pulse" />
-                  {slide.category}
+          {/* Bottom Card Content overlay */}
+          <div className="relative z-10 mt-auto bg-white/95 border border-slate-200/60 p-5 rounded-2xl shadow-lg space-y-4">
+            {slides.map((slide, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`transition-all duration-500 ${
+                    index === currentSlide ? 'block opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-2'
+                  }`}
+                >
+                  <div className="text-indigo-600 font-bold text-xs uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <slide.icon className="h-3.5 w-3.5 animate-pulse text-indigo-600" />
+                    {slide.category}
+                  </div>
+                  <h3 className="text-base font-bold text-slate-800 leading-snug">
+                    {slide.title}<span className="text-indigo-600">{slide.highlight}</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {slide.description}
+                  </p>
                 </div>
-                <h3 className="text-base font-bold text-slate-800 leading-snug">
-                  {slide.title}<span className="text-indigo-600">{slide.highlight}</span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  {slide.description}
-                </p>
-              </div>
-            ))}
+              );
+            })}
 
-            {/* Bottom Status Grid */}
-            <div className="grid grid-cols-4 gap-2 pt-3.5 border-t border-slate-100 text-center">
-              <div className="flex flex-col items-center gap-0.5">
+            {/* Icons Grid Row */}
+            <div className="grid grid-cols-4 gap-2 pt-3.5 border-t border-slate-100 mt-4 text-center">
+              <div className="flex flex-col items-center gap-1">
                 <div className="h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <BarChart2 className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tight mt-1">Analytics</span>
+                <span className="text-[8px] font-bold text-slate-600 uppercase tracking-tight mt-1">Real-time Analytics</span>
               </div>
-              <div className="flex flex-col items-center gap-0.5">
+              <div className="flex flex-col items-center gap-1">
                 <div className="h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <Cpu className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tight mt-1">AI Engine</span>
+                <span className="text-[8px] font-bold text-slate-600 uppercase tracking-tight mt-1">AI Insights</span>
               </div>
-              <div className="flex flex-col items-center gap-0.5">
+              <div className="flex flex-col items-center gap-1">
                 <div className="h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <ShieldCheck className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tight mt-1">Security</span>
+                <span className="text-[8px] font-bold text-slate-600 uppercase tracking-tight mt-1">Secure & Reliable</span>
               </div>
-              <div className="flex flex-col items-center gap-0.5">
+              <div className="flex flex-col items-center gap-1">
                 <div className="h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <Zap className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tight mt-1">Performance</span>
+                <span className="text-[8px] font-bold text-slate-600 uppercase tracking-tight mt-1">High Performance</span>
               </div>
             </div>
 
