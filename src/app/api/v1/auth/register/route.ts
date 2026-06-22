@@ -60,11 +60,11 @@ export async function POST(req: NextRequest) {
       });
 
       // 4. Create default Categories
-      await tx.category.createMany({
-        data: [
-          { companyId: company.id, name: 'Raw Materials', description: 'Components and inputs' },
-          { companyId: company.id, name: 'Finished Products', description: 'Ready for client shipments' },
-        ],
+      await tx.category.create({
+        data: { companyId: company.id, name: 'Raw Materials', description: 'Components and inputs' },
+      });
+      await tx.category.create({
+        data: { companyId: company.id, name: 'Finished Products', description: 'Ready for client shipments' },
       });
 
       // 5. Audit Log
