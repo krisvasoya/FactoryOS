@@ -143,11 +143,23 @@ graph TD
 
 ## 📸 Screenshots
 
-### Dark Mode Dashboard (Executive View)
+### 1. Scroll-Free Light Mode Login Portal
+![Login Portal](assets/login_page.png)
+
+### 2. Scroll-Free Light Mode Registration Portal
+![Registration Portal](assets/register_page.png)
+
+### 3. Dark Mode Dashboard (Executive View)
 ![Dashboard Top](assets/dashboard_top.png)
 
-### Production Analytics & AI Insights
+### 4. Production Analytics & AI Insights
 ![Dashboard Bottom](assets/dashboard_bottom.png)
+
+### 5. Intelligent Warehouse Logistics
+![Warehouse Logistics](assets/warehouse.png)
+
+### 6. PCB Robotic Assembly
+![PCB Assembly](assets/pcb_assembly.png)
 
 ---
 
