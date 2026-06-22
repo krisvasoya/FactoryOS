@@ -18,7 +18,7 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState<Array<{ sender: 'ai' | 'user'; text: string; date: Date }>>([
     {
       sender: 'ai',
-      text: "Hello, I am your FactoryOS Co-Pilot. I can help analyze your production lines, project material requirements, scan invoices, or run queries. What would you like to check today?",
+      text: "Hello, I am your FactoryOS Co-Pilot. I can help explain project features (like BOM, Attendance, Orders, or Finance) and query real-time metrics from your database. What would you like to check today?",
       date: new Date(),
     },
   ]);
@@ -111,9 +111,10 @@ export default function AIAssistant() {
   };
 
   const quickPrompts = [
-    'Analyze inventory risk levels',
-    'Run SMT-01 machine efficiency audit',
-    'Generate sales demand forecast',
+    'How do I create a production order?',
+    'Check low stock raw materials',
+    'How is employee attendance tracked?',
+    'How do I log client invoices & expenses?',
   ];
 
   return (
@@ -286,7 +287,7 @@ export default function AIAssistant() {
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask for forecasts, stats, audits..."
+                  placeholder="Ask how to use a feature or query live data..."
                   className="flex-1 rounded-xl border border-border bg-card px-4 py-3 text-xs focus:border-indigo-500 focus:outline-none transition-colors"
                 />
                 <button

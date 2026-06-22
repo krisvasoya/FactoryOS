@@ -89,6 +89,12 @@ export function useFinance() {
       if (res.ok) {
         const payload = await res.json();
         setFinanceData(payload);
+        if (payload.customers) {
+          setCustomers(payload.customers);
+          if (payload.customers.length > 0) {
+            setCustomerId(payload.customers[0].id);
+          }
+        }
       }
     } catch (e) {
       console.error(e);
@@ -98,15 +104,7 @@ export function useFinance() {
   }
 
   async function loadSelectors() {
-    try {
-      setCustomers([
-        { id: 'cust-01', name: 'Global Electro-Distributors' },
-        { id: 'cust-02', name: 'EcoHeat Systems Solutions' },
-      ]);
-      setCustomerId('cust-01');
-    } catch (e) {
-      console.error(e);
-    }
+    // Loaded dynamically via loadFinance
   }
 
   async function loadLayoutSettings() {
@@ -115,7 +113,7 @@ export function useFinance() {
       if (res.ok) {
         const data = await res.json();
         setCompanyInfo(data.company);
-        const layoutSetting = data.settings?.find((s: any) => s.key === 'billing_template_layout');
+        const layoutSetting = data.settings?.find((s: { key: string; value: string }) => s.key === 'billing_template_layout');
         if (layoutSetting) {
           try {
             setInvoiceLayout(JSON.parse(layoutSetting.value));

@@ -45,12 +45,17 @@ export function InvoiceModal({ onClose, onSubmit, error, customers, form }: Invo
               value={form.customerId}
               onChange={(e) => form.setCustomerId(e.target.value)}
               className="w-full h-9 border border-border rounded-xl bg-card px-2 focus:outline-none"
+              required
             >
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+              {customers.length === 0 ? (
+                <option value="" disabled>No customer accounts found. Create one under Contacts first!</option>
+              ) : (
+                customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 

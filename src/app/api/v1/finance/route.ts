@@ -31,7 +31,13 @@ export async function GET(req: NextRequest) {
       orderBy: { date: 'desc' },
     });
 
-    return NextResponse.json({ invoices, payments, expenses });
+    // Fetch Customers
+    const customers = await db.customer.findMany({
+      where: { companyId, deletedAt: null },
+      orderBy: { name: 'asc' },
+    });
+
+    return NextResponse.json({ invoices, payments, expenses, customers });
   } catch (error) {
     console.error('Finance retrieve error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
