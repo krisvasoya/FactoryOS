@@ -248,7 +248,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Column: Asset Slideshow Carousel */}
-      <div className="hidden lg:col-span-7 lg:flex flex-col items-center justify-center p-8 bg-gradient-to-br from-indigo-50/40 via-white to-sky-50/40 relative overflow-hidden">
+      <div className="hidden lg:col-span-7 lg:flex flex-col items-center justify-center p-8 bg-linear-to-br from-indigo-50/40 via-white to-sky-50/40 relative overflow-hidden">
         {/* Decorative subtle ambient lights */}
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-600/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-80 h-80 bg-sky-500/5 rounded-full blur-[100px] pointer-events-none" />

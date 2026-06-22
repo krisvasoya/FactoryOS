@@ -641,7 +641,7 @@ export default function ReportsPage() {
       </div>
 
       {/* AI Generated Summary */}
-      <div className="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-900/10 to-indigo-900/5 p-5 space-y-2">
+      <div className="rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-900/10 to-indigo-900/5 p-5 space-y-2">
         <div className="text-[10px] uppercase font-bold tracking-wider text-violet-500 flex items-center gap-1.5">
           <TrendingUp className="h-3.5 w-3.5" /> AI Executive Summary
         </div>
@@ -781,7 +781,7 @@ export default function ReportsPage() {
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-secondary/40">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-sky-400 to-indigo-500 transition-all duration-700"
+                        className="h-full rounded-full bg-linear-to-r from-sky-400 to-indigo-500 transition-all duration-700"
                         style={{ width: `${item.pct}%` }}
                       />
                     </div>
