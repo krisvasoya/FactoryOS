@@ -17,9 +17,7 @@ export async function GET(req: NextRequest) {
       include: {
         product: true,
         items: {
-          include: {
-            rawMaterial: true,
-          },
+          include: { rawMaterial: true },
         },
       },
     });
@@ -35,7 +33,13 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ boms, productionOrders });
+    // Fetch Machines (active only for dropdown)
+    const machines = await db.machine.findMany({
+      where: { companyId, deletedAt: null },
+      orderBy: { name: 'asc' },
+    });
+
+    return NextResponse.json({ boms, productionOrders, machines });
   } catch (error) {
     console.error('Production fetch failed:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

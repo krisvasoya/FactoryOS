@@ -18,6 +18,13 @@ interface BOM {
   items: BOMItem[];
 }
 
+interface Machine {
+  id: string;
+  name: string;
+  code: string;
+  status: string;
+}
+
 interface ProductionOrder {
   id: string;
   quantity: number;
@@ -31,7 +38,7 @@ interface ProductionOrder {
 }
 
 export default function ProductionPage() {
-  const [data, setData] = useState<{ boms: BOM[]; productionOrders: ProductionOrder[] } | null>(null);
+  const [data, setData] = useState<{ boms: BOM[]; productionOrders: ProductionOrder[]; machines: Machine[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'runs' | 'recipes'>('runs');
   const [showOrderModal, setShowOrderModal] = useState(false);
@@ -41,7 +48,6 @@ export default function ProductionPage() {
   // Selector databases
   const [products, setProducts] = useState<Array<{ id: string; name: string; sku: string }>>([]);
   const [materials, setMaterials] = useState<Array<{ id: string; name: string; sku: string; unit: string }>>([]);
-  const [machines, setMachines] = useState<Array<{ id: string; name: string; code: string }>>([]);
 
   // Production Order Form State
   const [bomId, setBomId] = useState('');
@@ -83,16 +89,16 @@ export default function ProductionPage() {
           if (prodRes.ok) {
             const payload = await prodRes.json();
             setData(payload);
-            if (payload.boms.length > 0) setBomId(payload.boms[0].id);
+            if (payload.boms?.length > 0) setBomId(payload.boms[0].id);
           }
-          if (prodsRes.ok && matsRes.ok) {
-            setProducts(await prodsRes.json());
-            setMaterials(await matsRes.json());
+          if (prodsRes.ok) setProducts(await prodsRes.json());
+          if (matsRes.ok) {
+            const mats = await matsRes.json();
+            setMaterials(mats);
+            if (mats.length > 0) {
+              setSelectedComponents([{ rawMaterialId: mats[0].id, quantity: '1' }]);
+            }
           }
-          setMachines([
-            { id: 'mch-smt-01', name: 'SMT Assembly Line 01', code: 'MCH-SMT-01' },
-            { id: 'mch-inj-02', name: 'Plastic Injection Press 02', code: 'MCH-INJ-02' },
-          ]);
         }
       } catch (e) {
         console.error(e);
@@ -413,17 +419,23 @@ export default function ProductionPage() {
             <form onSubmit={handleStartOrder} className="space-y-4 text-xs">
               <div className="space-y-1">
                 <label className="font-semibold">Select BOM Recipe *</label>
-                <select
-                  value={bomId}
-                  onChange={(e) => setBomId(e.target.value)}
-                  className="w-full h-9 border border-border rounded-xl bg-card px-2 focus:outline-none"
-                >
-                  {data?.boms.map((bom) => (
-                    <option key={bom.id} value={bom.id}>
-                      {bom.name} ({bom.product.name})
-                    </option>
-                  ))}
-                </select>
+                {(!data?.boms || data.boms.length === 0) ? (
+                  <div className="rounded-lg bg-amber-500/10 p-2.5 text-[11px] text-amber-500">
+                    No BOM recipes yet. Close this and create a BOM Recipe first.
+                  </div>
+                ) : (
+                  <select
+                    value={bomId}
+                    onChange={(e) => setBomId(e.target.value)}
+                    className="w-full h-9 border border-border rounded-xl bg-card px-2 focus:outline-none"
+                  >
+                    {data.boms.map((bom) => (
+                      <option key={bom.id} value={bom.id}>
+                        {bom.name} ({bom.product.name})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -435,9 +447,9 @@ export default function ProductionPage() {
                     className="w-full h-9 border border-border rounded-xl bg-card px-2 focus:outline-none"
                   >
                     <option value="">Manual / Workbench</option>
-                    {machines.map((m) => (
+                    {(data?.machines ?? []).map((m) => (
                       <option key={m.id} value={m.id}>
-                        {m.name}
+                        {m.name} [{m.code}]
                       </option>
                     ))}
                   </select>
@@ -509,17 +521,23 @@ export default function ProductionPage() {
 
                 <div className="space-y-1">
                   <label className="font-semibold">Finished Product Target *</label>
-                  <select
-                    value={productId}
-                    onChange={(e) => setProductId(e.target.value)}
-                    className="w-full h-9 border border-border rounded-xl bg-card px-2 focus:outline-none"
-                  >
-                    {products.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.sku} - {p.name}
-                      </option>
-                    ))}
-                  </select>
+                  {products.length === 0 ? (
+                    <div className="rounded-lg bg-amber-500/10 p-2.5 text-[11px] text-amber-500">
+                      No products yet. Add products first from the Products page.
+                    </div>
+                  ) : (
+                    <select
+                      value={productId}
+                      onChange={(e) => setProductId(e.target.value)}
+                      className="w-full h-9 border border-border rounded-xl bg-card px-2 focus:outline-none"
+                    >
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.sku} — {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
               </div>
 
