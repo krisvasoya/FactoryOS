@@ -47,7 +47,8 @@ model User {
   id           String   @id @default(uuid())
   companyId    String
   email        String   @unique
-  passwordHash String
+  passwordHash String?                      // Nullable — Google-only users have no password
+  googleId     String?  @unique             // Google OAuth "sub" identifier
   name         String
   role         String   @default("Viewer") // Owner, Admin, Manager, Accountant, Production, Warehouse, Sales, Viewer
   isActive     String   @default("true")   // Using string "true"/"false" or boolean
