@@ -121,7 +121,7 @@ export default function AIAssistant() {
       {/* Floating Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-30 flex h-14 items-center gap-2 rounded-full bg-primary text-primary-foreground border border-border shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
+        className="fixed bottom-6 right-6 z-30 flex h-14 items-center gap-2 rounded-full bg-primary text-primary-foreground border border-border shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 px-6"
       >
         <Sparkles className="h-5 w-5 animate-pulse" />
         <span className="text-xs font-semibold tracking-wide">Ask Co-Pilot</span>

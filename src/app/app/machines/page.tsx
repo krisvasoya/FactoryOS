@@ -163,7 +163,7 @@ export default function MachinesPage() {
           onClick={() => setShowScheduleModal(true)}
           className="flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground font-semibold px-4 py-2.5 text-xs shadow-md hover:scale-[1.02] hover:opacity-90 transition-all cursor-pointer"
         >
-          <Calendar className="h-4 w-4 text-slate-950" />
+          <Calendar className="h-4 w-4" />
           <span>Book Maintenance</span>
         </button>
       </div>

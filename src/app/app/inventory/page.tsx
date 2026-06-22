@@ -167,7 +167,7 @@ export default function InventoryPage() {
           onClick={() => setShowAdjustModal(true)}
           className="flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground font-semibold px-4 py-2.5 text-xs shadow-md hover:scale-[1.02] hover:opacity-90 transition-all cursor-pointer"
         >
-          <ArrowLeftRight className="h-4 w-4 text-slate-950" />
+          <ArrowLeftRight className="h-4 w-4" />
           <span>Post Stock Action</span>
         </button>
       </div>
