@@ -14,25 +14,6 @@ function LoginContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [telemetry, setTelemetry] = useState('Initializing secure console connection...');
-
-  // Telemetry loop for modern industrial feel
-  useEffect(() => {
-    const messages = [
-      'Secure session cluster validated. Standby.',
-      'Active network links: 4 industrial edge nodes live.',
-      'DB engine connected: Neon PostgreSQL cluster.',
-      'Prisma client client-pool successfully initialized.',
-      'AI optimization co-pilot online (v1.3.0).',
-      'Tenant partition verification complete.',
-    ];
-    let i = 0;
-    const interval = setInterval(() => {
-      setTelemetry(messages[i]);
-      i = (i + 1) % messages.length;
-    }, 3500);
-    return () => clearInterval(interval);
-  }, []);
 
   // Read ?error= param from Google OAuth callback and initialize error state
   const googleErrorMessages: Record<string, string> = {
@@ -149,12 +130,7 @@ function LoginContent() {
         </div>
 
         <div className="max-w-sm w-full mx-auto my-auto space-y-6">
-          {/* Real-time Telemetry Dashboard Bar */}
-          <div className="w-full bg-slate-900 text-emerald-400 font-mono text-[10px] p-2.5 rounded-xl flex items-center gap-2 border border-slate-800 shadow-inner">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
-            <span className="opacity-80">Telemetry:</span>
-            <span className="truncate flex-1">{telemetry}</span>
-          </div>
+
 
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-[10px] font-bold text-indigo-600 tracking-wider uppercase mb-1">
