@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       if (!checkRole(session.role, ['Owner', 'Admin', 'Manager', 'Production', 'Warehouse'])) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
-      const { employeeId, status } = body;
+      const { employeeId, status, date: dateStr } = body;
 
       if (!employeeId || !status) {
         return NextResponse.json({ error: 'Missing attendance data' }, { status: 400 });
@@ -88,26 +88,20 @@ export async function POST(req: NextRequest) {
 
       // Verify employee belongs to company
       const employee = await db.employee.findFirst({
-        where: {
-          id: employeeId,
-          companyId,
-          deletedAt: null,
-        },
+        where: { id: employeeId, companyId, deletedAt: null },
       });
-
       if (!employee) {
         return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
       }
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      // Use provided date or today
+      const targetDate = dateStr ? new Date(dateStr) : new Date();
+      targetDate.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(targetDate);
+      dayEnd.setHours(23, 59, 59, 999);
 
-      // Check if already marked today
       const existing = await db.attendance.findFirst({
-        where: {
-          employeeId,
-          date: { gte: today },
-        },
+        where: { employeeId, date: { gte: targetDate, lte: dayEnd } },
       });
 
       if (existing) {
@@ -121,13 +115,32 @@ export async function POST(req: NextRequest) {
       const attendance = await db.attendance.create({
         data: {
           employeeId,
-          date: new Date(),
+          date: targetDate,
           status,
           clockIn: status === 'Present' ? new Date() : null,
         },
       });
 
       return NextResponse.json(attendance, { status: 201 });
+    }
+
+    if (action === 'getEmployeeAttendance') {
+      const { employeeId } = body;
+      if (!employeeId) {
+        return NextResponse.json({ error: 'employeeId is required' }, { status: 400 });
+      }
+      const employee = await db.employee.findFirst({
+        where: { id: employeeId, companyId, deletedAt: null },
+      });
+      if (!employee) {
+        return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
+      }
+      const attendance = await db.attendance.findMany({
+        where: { employeeId },
+        orderBy: { date: 'desc' },
+        take: 180,
+      });
+      return NextResponse.json({ employee, attendance });
     }
 
     return NextResponse.json({ error: 'Invalid operation' }, { status: 400 });
