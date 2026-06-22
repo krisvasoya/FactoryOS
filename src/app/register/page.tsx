@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowRight, Loader2, Building, User, Mail, Lock, Cpu, Database, Landmark, ShieldCheck, BarChart2, Zap } from 'lucide-react';
+import { FactoryOSLogo } from '@/components/factoryos-logo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -91,10 +92,7 @@ export default function RegisterPage() {
       {/* Left Column: Register Tenant Form */}
       <div className="lg:col-span-5 flex flex-col justify-between p-8 sm:p-12 md:p-16 bg-white border-r border-slate-200/80 overflow-y-auto">
         <div className="flex items-center gap-2 mb-8">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white font-extrabold text-sm shadow-md">
-            F
-          </div>
-          <span className="font-bold tracking-tight text-sm text-slate-800">FactoryOS</span>
+          <FactoryOSLogo size={30} variant="light" />
         </div>
 
         <div className="max-w-sm w-full mx-auto my-auto space-y-6">

@@ -14,8 +14,8 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Factory,
 } from 'lucide-react';
+import { FactoryOSLogo } from '@/components/factoryos-logo';
 
 const sidebarItems = [
   { name: 'Dashboard',  href: '/app/dashboard',      icon: LayoutDashboard },
@@ -78,32 +78,8 @@ export default function Sidebar() {
     >
       {/* Brand Header */}
       <div className="flex h-16 items-center px-5 border-b border-[var(--sidebar-border)]">
-        <Link href="/app/dashboard" className="flex items-center gap-2.5 group">
-          {/* Factory-specific icon mark */}
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-lg"
-            style={{
-              background: 'linear-gradient(135deg, #10221a 0%, #070809 100%)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-              border: '1px solid var(--sidebar-border)',
-            }}
-          >
-            <Factory className="h-4 w-4 text-(--sidebar-active-text)" strokeWidth={1.75} />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span
-              className="font-bold text-sm tracking-tight"
-              style={{ color: 'var(--foreground)' }}
-            >
-              FactoryOS
-            </span>
-            <span
-              className="text-[10px] font-medium mt-0.5"
-              style={{ color: 'var(--muted-foreground)' }}
-            >
-              AI
-            </span>
-          </div>
+        <Link href="/app/dashboard" className="flex items-center group">
+          <FactoryOSLogo size={28} variant="dark" />
         </Link>
       </div>
 
