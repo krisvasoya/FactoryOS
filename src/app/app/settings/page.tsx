@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Shield, UserPlus, Building, Info, Palette, FileText, Check, Layout } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Shield, UserPlus, Building, Info, Palette, FileText, Check, Layout, LogOut } from 'lucide-react';
 import { TableSkeleton } from '@/components/skeleton';
 
 interface CompanyInfo {
@@ -21,6 +22,7 @@ interface TeamMember {
 }
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [company, setCompany] = useState<CompanyInfo | null>(null);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -196,6 +198,16 @@ export default function SettingsPage() {
       setError('Connection error.');
     } finally {
       setSavingLayout(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/v1/auth', { method: 'DELETE' });
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout failed:', error);
     }
   };
 
@@ -676,6 +688,28 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+      {/* Danger Zone — Sign Out */}
+      <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 shadow-sm space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5 border-b border-red-500/20 pb-3">
+          <LogOut className="h-4 w-4" /> Session & Security
+        </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>Sign out of your account</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              This will clear your session token and return you to the login portal.
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-400 hover:scale-[0.98] transition-all duration-200 shrink-0"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 }

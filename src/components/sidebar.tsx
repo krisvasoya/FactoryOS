@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Package,
@@ -13,7 +13,6 @@ import {
   Cpu,
   BarChart3,
   Settings,
-  LogOut,
 } from 'lucide-react';
 import { FactoryOSLogo } from '@/components/factoryos-logo';
 
@@ -31,45 +30,6 @@ const sidebarItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = React.useState<{ name: string; role: string } | null>(null);
-
-  React.useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await fetch('/api/v1/auth');
-        if (res.ok) {
-          const data = await res.json();
-          setUser({
-            name: data.user.name,
-            role: data.user.role,
-          });
-        }
-      } catch (err) {
-        console.error('Failed to load user info in sidebar', err);
-      }
-    }
-    fetchUser();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/v1/auth', { method: 'DELETE' });
-      router.push('/login');
-      router.refresh();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
-  };
 
   return (
     <aside
@@ -104,43 +64,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Bottom Profile & Sign Out */}
-      <div
-        className="p-4 border-t flex flex-col gap-3"
-        style={{ borderColor: 'var(--sidebar-border)' }}
-      >
-        {user && (
-          <div className="flex items-center gap-3 px-1 animate-fade-in">
-            <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold border"
-              style={{
-                background: 'linear-gradient(135deg, #10221a, #070809)',
-                borderColor: 'var(--sidebar-border)',
-                color: 'var(--sidebar-active-text)',
-              }}
-            >
-              {getInitials(user.name)}
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                {user.name}
-              </span>
-              <span className="text-[10px]" style={{ color: 'var(--muted-foreground)' }}>
-                {user.role}
-              </span>
-            </div>
-          </div>
-        )}
-        <button
-          onClick={handleLogout}
-          className="sidebar-item w-full text-left flex items-center gap-2 px-1 hover:bg-red-500/10 rounded-lg py-1.5 transition-all"
-          style={{ color: '#f87171' }}
-        >
-          <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.75} style={{ color: '#f87171' }} />
-          <span className="text-xs font-medium">Sign Out</span>
-        </button>
-      </div>
     </aside>
   );
 }
