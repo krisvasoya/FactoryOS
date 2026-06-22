@@ -186,7 +186,7 @@ function LoginContent() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="krishvasoya6@gmail.com"
+                  placeholder="admin@factoryos.com"
                   className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-xs focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100/50 focus:outline-none transition-all duration-200 placeholder:text-slate-400 text-slate-900"
                 />
               </div>
