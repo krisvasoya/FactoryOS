@@ -29,7 +29,12 @@ export async function GET(req: NextRequest) {
       orderBy: { role: 'asc' },
     });
 
-    return NextResponse.json({ company, members });
+    // Fetch all Company Settings
+    const settings = await db.settings.findMany({
+      where: { companyId },
+    });
+
+    return NextResponse.json({ company, members, settings });
   } catch (error) {
     console.error('Settings GET failure:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -146,6 +151,45 @@ export async function POST(req: NextRequest) {
         role: user.role,
         createdAt: user.createdAt,
       }, { status: 201 });
+    }
+
+    if (action === 'updateInvoiceLayout') {
+      const { layout } = body;
+
+      if (!layout) {
+        return NextResponse.json({ error: 'Layout configuration is required' }, { status: 400 });
+      }
+
+      const setting = await db.settings.upsert({
+        where: {
+          companyId_key: {
+            companyId,
+            key: 'billing_template_layout',
+          },
+        },
+        update: {
+          value: JSON.stringify(layout),
+        },
+        create: {
+          companyId,
+          key: 'billing_template_layout',
+          value: JSON.stringify(layout),
+        },
+      });
+
+      // Audit Log
+      await db.auditLog.create({
+        data: {
+          companyId,
+          userId: session.userId,
+          action: 'Update Settings',
+          entity: 'Settings',
+          entityId: setting.id,
+          details: 'Updated customizable invoice layout configuration',
+        },
+      });
+
+      return NextResponse.json(setting);
     }
 
     return NextResponse.json({ error: 'Invalid operation' }, { status: 400 });
