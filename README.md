@@ -170,31 +170,33 @@ graph TD
 
 ## 📂 Folder Structure
 
+FactoryOS AI follows a **feature-based architecture (10-Year Engineer Standard)**, grouping code by domain/feature rather than technical type. This separates UI views, forms, business logic (custom hooks), and state management to prevent monolithic file growth and avoid circular dependencies.
+
 ```
 factory-os/
 ├── prisma/
 │   ├── dev.db                 # SQLite development database
 │   ├── schema.prisma          # Database schema (tenants, RBAC, financials, production)
-│   └── seed.js                # Core demo seed data containing 4 distinct roles
+│   └── seed.js                # Core demo seed data containing multiple roles
 ├── src/
 │   ├── app/
 │   │   ├── api/v1/            # API Endpoints (auth, dashboard, inventory, production, etc.)
-│   │   ├── app/               # Private dashboard layouts & pages
-│   │   │   ├── dashboard/     # Metric cards, Recharts boards, recent logs
-│   │   │   ├── inventory/     # Warehouse stock management
-│   │   │   └── ...            # Other private feature paths
-│   │   ├── login/             # Authentication page
-│   │   ├── register/          # Multi-tenant registration portal
-│   │   ├── globals.css        # Main stylesheet (warm charcoal variables, animations)
+│   │   ├── app/               # Private dashboard views (orchestrators importing from features)
+│   │   │   ├── dashboard/     # Page entry importing features/dashboard
+│   │   │   ├── inventory/     # Page entry importing features/inventory
+│   │   │   └── ...            # Other routing pages
+│   │   ├── login/             # Scroll-free Light Theme Login view
+│   │   ├── register/          # Scroll-free Light Theme Multi-tenant registration view
+│   │   ├── globals.css        # Main stylesheet
 │   │   └── layout.tsx         # Main layout wrapping context and pages
-│   ├── components/
-│   │   ├── header.tsx         # Top bar controls (dates, settings, notifications)
-│   │   ├── sidebar.tsx        # Navigation menu and active session profile card
-│   │   ├── ai-assistant.tsx   # Floating AI Co-Pilot chat drawer
-│   │   └── theme-context.tsx  # Context manager toggling light/dark mode
-│   ├── lib/
-│   │   ├── auth.ts            # JWT encrypt, sign, and session cookies
-│   │   └── db.ts              # Prisma Client singleton
+│   ├── features/              # Feature domains containing colocated components, hooks, and types
+│   │   ├── auth/              # Auth components (LoginForm, RegisterForm, AuthVisuals)
+│   │   ├── dashboard/         # Dashboard hook (useDashboard) & modular cards, charts, and lists
+│   │   ├── products/          # Products hook (useProducts) & tables/modals
+│   │   ├── inventory/         # Inventory hook (useInventory) & tables, actions, and barcode generator
+│   │   └── finance/           # Finance hook (useFinance), tables, & GST/invoicing calculators
+│   ├── components/            # Shared UI components (header, sidebar, AI assistant, skeletons)
+│   ├── lib/                   # Shared utility logic (auth sessions, db client singleton)
 │   └── middleware.ts          # Route protection and tenant boundary verification
 ```
 
@@ -388,6 +390,8 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ## 📈 Development Roadmap
 
 ### Completed Features
+* [x] **10-Year Engineer Standard Restructuring**: Modularized codebase into domain-specific features (`src/features/`) separating UI and business logic (custom hooks).
+* [x] **Light Theme Login & Registration Redesign**: Scroll-free, premium light-themed UI (`#faf9f6` canvas, white glassmorphic forms, crisp shadows) optimized to sit fully inside the viewport with clean SVG visual animations.
 * [x] **Redesigned User Interface**: Modern and beautiful light mode default matching clean dashboard styling.
 * [x] **Premium Dark Mode Theme**: Sleek, professional warm charcoal palette (`#0b0c0e`) with desaturated semantic colors.
 * [x] **5-Card Metric Layout**: Displaying live Revenue, Net Profit, Orders, and Low Stock levels side-by-side.
