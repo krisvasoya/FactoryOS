@@ -8,7 +8,6 @@ import {
   Activity,
   AlertTriangle,
   DollarSign,
-  PackageCheck,
   Cpu,
   RefreshCw,
   Boxes,
@@ -18,6 +17,7 @@ import {
   ShoppingBag,
   Hourglass,
 } from 'lucide-react';
+import { DashboardSkeleton } from '@/components/skeleton';
 
 // Dynamically import Recharts to avoid SSR hydration mismatches
 const BarChart = dynamic(() => import('recharts').then((mod) => mod.BarChart), { ssr: false });
@@ -65,40 +65,12 @@ interface DashboardData {
     user: string;
     entity: string;
     time: string;
+    timeAgo?: string;
   }>;
   aiRecommendations: string[];
+  financialData: Array<{ name: string; Revenue: number; Expenses: number }>;
+  productionData: Array<{ name: string; Target: number; Completed: number }>;
 }
-
-const financialData = [
-  { name: 'Jan', Revenue: 4200, Expenses: 2500 },
-  { name: 'Feb', Revenue: 3800, Expenses: 1400 },
-  { name: 'Mar', Revenue: 9800, Expenses: 2800 },
-  { name: 'Apr', Revenue: 2600, Expenses: 3800 },
-  { name: 'May', Revenue: 4800, Expenses: 5000 },
-  { name: 'Jun', Revenue: 3400, Expenses: 4200 },
-  { name: 'Jul', Revenue: 3500, Expenses: 4000 },
-];
-
-const productionData = [
-  { name: 'Week 1', Target: 440, Completed: 430 },
-  { name: 'Week 2', Target: 470, Completed: 300 },
-  { name: 'Week 3', Target: 480, Completed: 560 },
-  { name: 'Week 4', Target: 510, Completed: 580 },
-];
-
-const recentActivities = [
-  { id: 1, title: 'New production order created', detail: 'PO-2026-089 • 150 units', time: '2 min ago', type: 'production' },
-  { id: 2, title: 'Invoice #INV-2026-047 marked paid', detail: '$4,250.00 received', time: '18 min ago', type: 'finance' },
-  { id: 3, title: 'Low stock alert triggered', detail: 'RGB LEDs below min threshold', time: '1 hr ago', type: 'alert' },
-  { id: 4, title: 'Machine maintenance completed', detail: 'Plastic Injection Press 01', time: '3 hr ago', type: 'machine' },
-  { id: 5, title: 'New supplier added', detail: 'Apex Components Ltd.', time: '5 hr ago', type: 'supplier' },
-];
-
-const aiInsights = [
-  'Revenue trending +14% above 3-month average.',
-  'Reorder RGB LEDs — stock critical (450 units, min 1000).',
-  'Machine efficiency at 91% — optimal range.',
-];
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -110,7 +82,24 @@ export default function DashboardPage() {
       const res = await fetch('/api/v1/dashboard');
       if (res.ok) {
         const payload = await res.json();
-        setData(payload);
+        
+        const now = Date.now();
+        const processedLogs = (payload.recentLogs || []).map((log: { id: string; action: string; user: string; entity: string; time: string }) => {
+          const diff = now - new Date(log.time).getTime();
+          const mins = Math.floor(diff / 60000);
+          const hrs = Math.floor(mins / 60);
+          const days = Math.floor(hrs / 24);
+
+          let timeAgo = '';
+          if (mins < 1) timeAgo = 'Just now';
+          else if (mins < 60) timeAgo = `${mins} min ago`;
+          else if (hrs < 24) timeAgo = `${hrs} hr ago`;
+          else timeAgo = `${days} days ago`;
+
+          return { ...log, timeAgo };
+        });
+
+        setData({ ...payload, recentLogs: processedLogs });
       }
     } catch (e) {
       console.error('Failed to load dashboard data', e);
@@ -131,15 +120,20 @@ export default function DashboardPage() {
     loadDashboardData();
   };
 
+  const formatLogTitle = (action: string, entity: string) => {
+    if (action === 'Create' && entity === 'ProductionOrder') return 'New production order created';
+    if (action === 'Update' && entity === 'Invoice') return 'Invoice status updated';
+    if (action === 'Create' && entity === 'Invoice') return 'New invoice issued';
+    if (action === 'Create' && entity === 'Payment') return 'Payment recorded';
+    if (action === 'Create' && entity === 'Expense') return 'New expense logged';
+    if (action === 'Create' && entity === 'RawMaterial') return 'New raw material added';
+    if (action === 'Create' && entity === 'Product') return 'New finished product added';
+    if (action === 'Update' && entity === 'Machine') return 'Machine status modified';
+    return `${action} action on ${entity}`;
+  };
+
   if (loading) {
-    return (
-      <div className="flex h-[calc(100vh-8rem)] items-center justify-center">
-        <div className="flex flex-col items-center gap-3" style={{ color: 'var(--muted-foreground)' }}>
-          <Activity className="h-8 w-8 text-slate-400 animate-spin" />
-          <span className="text-xs font-medium">Loading dashboard...</span>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!data) {
@@ -158,6 +152,9 @@ export default function DashboardPage() {
       </div>
     );
   }
+
+  const hasFinanceData = data.financialData && data.financialData.some(d => d.Revenue > 0 || d.Expenses > 0);
+  const hasProductionData = data.productionData && data.productionData.some(d => d.Target > 0 || d.Completed > 0);
 
   const metrics = [
     {
@@ -298,16 +295,24 @@ export default function DashboardPage() {
             </p>
           </div>
           <div style={{ height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={financialData} barSize={10} barGap={2} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
-                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'var(--hover-bg)' }} />
-                <Bar dataKey="Revenue" fill="var(--chart-primary)" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="Expenses" fill="var(--chart-secondary)" radius={[3, 3, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {!hasFinanceData ? (
+              <div className="flex h-full flex-col items-center justify-center border border-dashed border-border rounded-xl bg-secondary/5 p-4 text-center">
+                <DollarSign className="h-8 w-8 text-muted-foreground/50 mb-1.5" />
+                <p className="text-xs font-semibold text-foreground">No financial activity recorded</p>
+                <p className="text-[10px] text-muted-foreground max-w-xs mx-auto mt-0.5">Invoices and expenses registered for this month will generate real-time revenue audits here.</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data.financialData} barSize={10} barGap={2} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
+                  <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'var(--hover-bg)' }} />
+                  <Bar dataKey="Revenue" fill="var(--chart-primary)" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Expenses" fill="var(--chart-secondary)" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
           {/* Legend */}
           <div className="flex items-center gap-4 mt-3">
@@ -336,30 +341,38 @@ export default function DashboardPage() {
             </p>
           </div>
           <div style={{ height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={productionData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={tooltipStyle} />
-                <Line
-                  type="monotone"
-                  dataKey="Target"
-                  stroke="var(--chart-secondary)"
-                  strokeWidth={2}
-                  strokeDasharray="5 3"
-                  dot={{ r: 4, fill: 'var(--chart-secondary)', strokeWidth: 0 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Completed"
-                  stroke="var(--chart-primary)"
-                  strokeWidth={2.5}
-                  dot={{ r: 4, fill: 'var(--chart-primary)', strokeWidth: 0 }}
-                  activeDot={{ r: 5 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {!hasProductionData ? (
+              <div className="flex h-full flex-col items-center justify-center border border-dashed border-border rounded-xl bg-secondary/5 p-4 text-center">
+                <Activity className="h-8 w-8 text-muted-foreground/50 mb-1.5" />
+                <p className="text-xs font-semibold text-foreground">No production logs found</p>
+                <p className="text-[10px] text-muted-foreground max-w-xs mx-auto mt-0.5">Create and complete manufacturing runs in the production board to display weekly target metrics.</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data.productionData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--chart-text)' }} tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Line
+                    type="monotone"
+                    dataKey="Target"
+                    stroke="var(--chart-secondary)"
+                    strokeWidth={2}
+                    strokeDasharray="5 3"
+                    dot={{ r: 4, fill: 'var(--chart-secondary)', strokeWidth: 0 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="Completed"
+                    stroke="var(--chart-primary)"
+                    strokeWidth={2.5}
+                    dot={{ r: 4, fill: 'var(--chart-primary)', strokeWidth: 0 }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
           {/* Legend */}
           <div className="flex items-center gap-4 mt-3">
@@ -394,45 +407,55 @@ export default function DashboardPage() {
             <ClipboardList className="h-4 w-4" style={{ color: 'var(--muted-foreground)' }} />
           </div>
           <div className="space-y-0">
-            {recentActivities.map((act, idx) => (
-              <div
-                key={act.id}
-                className="flex items-start gap-3 py-3 transition-colors duration-150 rounded-lg px-2 -mx-2 cursor-default hover:bg-(--hover-bg)"
-                style={{
-                  borderBottom: idx < recentActivities.length - 1 ? '1px solid var(--border)' : 'none',
-                  animationDelay: `${idx * 0.05 + 0.4}s`,
-                }}
-              >
-                <div
-                  className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-                  style={{
-                    backgroundColor:
-                      act.type === 'finance' ? 'var(--status-success-bg)' :
-                      act.type === 'alert'   ? 'var(--status-warning-bg)' :
-                      act.type === 'machine' ? 'var(--status-info-bg)' :
-                      act.type === 'production' ? 'var(--status-success-bg)' :
-                      'var(--card-subtle)',
-                  }}
-                >
-                  {act.type === 'production' && <ClipboardList className="h-3.5 w-3.5" style={{ color: 'var(--status-success-text)' }} />}
-                  {act.type === 'finance'    && <DollarSign className="h-3.5 w-3.5" style={{ color: 'var(--status-success-text)' }} />}
-                  {act.type === 'alert'      && <AlertTriangle className="h-3.5 w-3.5" style={{ color: 'var(--status-warning-text)' }} />}
-                  {act.type === 'machine'    && <Cpu className="h-3.5 w-3.5" style={{ color: 'var(--status-info-text)' }} />}
-                  {act.type === 'supplier'   && <PackageCheck className="h-3.5 w-3.5" style={{ color: 'var(--muted-foreground)' }} />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                    {act.title}
-                  </p>
-                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
-                    {act.detail}
-                  </p>
-                </div>
-                <span className="text-[10px] shrink-0 mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
-                  {act.time}
-                </span>
+            {data.recentLogs.length === 0 ? (
+              <div className="py-12 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl bg-secondary/5 mt-2">
+                No recent activity logged yet.
               </div>
-            ))}
+            ) : (
+              data.recentLogs.map((log, idx) => {
+                const isProduction = log.entity === 'ProductionOrder' || log.entity === 'BillOfMaterials' || log.entity === 'Machine';
+                const isFinance = log.entity === 'Invoice' || log.entity === 'Expense' || log.entity === 'Payment';
+                const isInventory = log.entity === 'InventoryItem' || log.entity === 'StockMovement' || log.entity === 'RawMaterial' || log.entity === 'Product';
+                
+                return (
+                  <div
+                    key={log.id}
+                    className="flex items-start gap-3 py-3 transition-colors duration-150 rounded-lg px-2 -mx-2 cursor-default hover:bg-hover-bg"
+                    style={{
+                      borderBottom: idx < data.recentLogs.length - 1 ? '1px solid var(--border)' : 'none',
+                      animationDelay: `${idx * 0.05 + 0.4}s`,
+                    }}
+                  >
+                    <div
+                      className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+                      style={{
+                        backgroundColor:
+                          isFinance ? 'var(--status-success-bg)' :
+                          isProduction ? 'var(--status-info-bg)' :
+                          isInventory ? 'var(--status-warning-bg)' :
+                          'var(--card-subtle)',
+                      }}
+                    >
+                      {isProduction && <Cpu className="h-3.5 w-3.5" style={{ color: 'var(--status-info-text)' }} />}
+                      {isFinance    && <DollarSign className="h-3.5 w-3.5" style={{ color: 'var(--status-success-text)' }} />}
+                      {isInventory  && <Boxes className="h-3.5 w-3.5" style={{ color: 'var(--status-warning-text)' }} />}
+                      {!isProduction && !isFinance && !isInventory && <ClipboardList className="h-3.5 w-3.5" style={{ color: 'var(--muted-foreground)' }} />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                        {formatLogTitle(log.action, log.entity)}
+                      </p>
+                      <p className="text-[11px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
+                        Performed by {log.user}
+                      </p>
+                    </div>
+                    <span className="text-[10px] shrink-0 mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
+                      {log.timeAgo || 'Recent'}
+                    </span>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -450,19 +473,25 @@ export default function DashboardPage() {
               </h3>
             </div>
             <div className="space-y-2">
-              {aiInsights.map((insight, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-2 rounded-lg p-2.5 text-[11px] leading-relaxed"
-                  style={{ backgroundColor: 'var(--card-subtle)', color: 'var(--muted-foreground)' }}
-                >
-                  <span
-                    className="shrink-0 mt-1 h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: 'var(--chart-primary)' }}
-                  />
-                  {insight}
+              {data.aiRecommendations.length === 0 ? (
+                <div className="py-6 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl bg-secondary/5 mt-2">
+                  No insights available yet.
                 </div>
-              ))}
+              ) : (
+                data.aiRecommendations.map((insight, i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-2 rounded-lg p-2.5 text-[11px] leading-relaxed"
+                    style={{ backgroundColor: 'var(--card-subtle)', color: 'var(--muted-foreground)' }}
+                  >
+                    <span
+                      className="shrink-0 mt-1 h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: 'var(--chart-primary)' }}
+                    />
+                    {insight}
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

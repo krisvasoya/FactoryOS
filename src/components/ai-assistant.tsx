@@ -121,7 +121,7 @@ export default function AIAssistant() {
       {/* Floating Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-30 flex h-14 items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 via-indigo-600 to-sky-500 px-5 text-white shadow-xl shadow-indigo-600/30 hover:scale-105 active:scale-95 transition-all duration-200"
+        className="fixed bottom-6 right-6 z-30 flex h-14 items-center gap-2 rounded-full bg-primary text-primary-foreground border border-border shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
       >
         <Sparkles className="h-5 w-5 animate-pulse" />
         <span className="text-xs font-semibold tracking-wide">Ask Co-Pilot</span>
@@ -291,7 +291,7 @@ export default function AIAssistant() {
                 />
                 <button
                   type="submit"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-indigo-600/20 hover:scale-105 transition-transform"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:scale-105 transition-transform"
                 >
                   <Send className="h-4 w-4" />
                 </button>

@@ -102,6 +102,58 @@ export async function GET(req: NextRequest) {
     const machineHealthRatio = machines.length > 0 ? (activeMachinesCount / machines.length) * 100 : 80;
     const healthScore = Math.min(100, Math.round((profitMargin * 0.4) + (machineHealthRatio * 0.4) + 20));
 
+    // Calculate last 7 months of financial data dynamically
+    const financialData = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const monthName = d.toLocaleString('en-US', { month: 'short' });
+      const monthNum = d.getMonth();
+      const yearNum = d.getFullYear();
+
+      const startOfMonth = new Date(yearNum, monthNum, 1);
+      const endOfMonth = new Date(yearNum, monthNum + 1, 0, 23, 59, 59, 999);
+
+      const monthInvoices = invoices.filter(inv => {
+        const invDate = new Date(inv.createdAt);
+        return invDate >= startOfMonth && invDate <= endOfMonth;
+      });
+      const monthRevenue = monthInvoices.reduce((acc, inv) => acc + inv.subTotal, 0);
+
+      const monthExpenses = expenses.filter(exp => {
+        const expDate = new Date(exp.date);
+        return expDate >= startOfMonth && expDate <= endOfMonth;
+      });
+      const monthExpenseSum = monthExpenses.reduce((acc, exp) => acc + exp.amount, 0);
+
+      financialData.push({
+        name: monthName,
+        Revenue: monthRevenue,
+        Expenses: monthExpenseSum,
+      });
+    }
+
+    // Calculate weekly production output (target vs completed) for the last 4 weeks
+    const productionData = [];
+    for (let i = 3; i >= 0; i--) {
+      const end = new Date(today.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      const start = new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const weekOrders = prodOrders.filter(o => {
+        const orderDate = new Date(o.createdAt);
+        return orderDate >= start && orderDate <= end;
+      });
+
+      const targetVal = weekOrders.reduce((acc, o) => acc + o.quantity, 0);
+      const completedVal = weekOrders.filter(o => o.status === 'Completed').reduce((acc, o) => acc + o.quantity, 0);
+
+      productionData.push({
+        name: `Week ${4 - i}`,
+        Target: targetVal,
+        Completed: completedVal,
+      });
+    }
+
     // 8. Construct AI insights/recommendations
     const recommendations = [];
     if (lowStockAlerts.length > 0) {
@@ -154,9 +206,12 @@ export async function GET(req: NextRequest) {
         time: log.createdAt,
       })),
       aiRecommendations: recommendations,
+      financialData,
+      productionData,
     });
   } catch (error) {
     console.error('Dashboard API failure:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+

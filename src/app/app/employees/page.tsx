@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, UserCheck, UserX, DollarSign, Activity } from 'lucide-react';
+import { Users, Plus, UserCheck, UserX, DollarSign } from 'lucide-react';
+import { TableSkeleton } from '@/components/skeleton';
 
 interface Attendance {
   id: string;
@@ -92,6 +93,10 @@ export default function EmployeesPage() {
   const totalPayroll = employees.reduce((sum, e) => sum + e.salary, 0);
   const presentToday = employees.filter(e => getTodayAttendance(e)?.status === 'Present').length;
 
+  if (loading) {
+    return <TableSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -101,7 +106,7 @@ export default function EmployeesPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 px-4 py-2.5 text-slate-950 font-bold text-xs shadow-md hover:scale-[1.02] transition-transform cursor-pointer"
+          className="flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground font-semibold px-4 py-2.5 text-xs shadow-md hover:scale-[1.02] hover:opacity-90 transition-all cursor-pointer"
         >
           <Plus className="h-4 w-4" /> Add Employee
         </button>
@@ -123,12 +128,7 @@ export default function EmployeesPage() {
         </div>
       </div>
 
-      {/* Employee Table */}
-      {loading ? (
-        <div className="flex h-64 items-center justify-center text-xs text-muted-foreground">
-          <Activity className="h-5 w-5 animate-spin mr-2 text-sky-400" /> Loading workforce data...
-        </div>
-      ) : employees.length === 0 ? (
+      {employees.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card p-12 text-center text-xs text-muted-foreground">
           No employees registered. Add a team member to get started.
         </div>
@@ -253,7 +253,7 @@ export default function EmployeesPage() {
                   <input type="number" value={salary} onChange={e => setSalary(e.target.value)} placeholder="2800" className="w-full h-9 border border-border rounded-xl bg-secondary/20 px-3 focus:outline-none" />
                 </div>
               </div>
-              <button type="submit" className="w-full h-10 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 text-slate-950 font-bold hover:scale-[0.98] transition-transform cursor-pointer">
+              <button type="submit" className="w-full h-10 rounded-xl bg-primary text-primary-foreground font-bold hover:scale-[0.98] hover:opacity-90 transition-all cursor-pointer">
                 Onboard Employee
               </button>
             </form>

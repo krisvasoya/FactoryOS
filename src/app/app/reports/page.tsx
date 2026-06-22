@@ -74,7 +74,7 @@ export default function ReportsPage() {
           <button
             onClick={() => handleExport('pdf')}
             disabled={generating}
-            className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 px-4 py-2.5 text-slate-950 font-bold text-xs hover:scale-[1.02] transition-transform cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground font-semibold px-4 py-2.5 text-xs hover:scale-[1.02] hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
           >
             {generating ? <Activity className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
             Export PDF

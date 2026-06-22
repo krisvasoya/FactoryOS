@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Shield, UserPlus, Building, Activity, Info } from 'lucide-react';
+import { Shield, UserPlus, Building, Info } from 'lucide-react';
+import { TableSkeleton } from '@/components/skeleton';
 
 interface CompanyInfo {
   name: string;
@@ -125,6 +126,10 @@ export default function SettingsPage() {
     }
   };
 
+  if (loading) {
+    return <TableSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header section */}
@@ -135,13 +140,7 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {loading ? (
-        <div className="flex h-64 items-center justify-center text-xs text-muted-foreground">
-          <Activity className="h-5 w-5 animate-spin mr-2 text-sky-400" />
-          Loading settings...
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Company configurations */}
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4 lg:col-span-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 border-b border-border pb-3">
@@ -257,7 +256,6 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-      )}
 
       {/* Invite Modal */}
       {showInviteModal && (
@@ -343,7 +341,7 @@ export default function SettingsPage() {
 
               <button
                 type="submit"
-                className="w-full h-10 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 text-slate-950 font-bold hover:scale-[0.98] transition-transform cursor-pointer"
+                className="w-full h-10 rounded-xl bg-primary text-primary-foreground font-bold hover:scale-[0.98] hover:opacity-90 transition-all cursor-pointer"
               >
                 Register Staff User
               </button>

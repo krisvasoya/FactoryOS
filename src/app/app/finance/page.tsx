@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Receipt, Plus, Percent, TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
+import { Receipt, Plus, Percent, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { TableSkeleton } from '@/components/skeleton';
 
 interface Customer {
   id: string;
@@ -210,6 +211,10 @@ export default function FinancePage() {
   const cashInflow = financeData?.payments.reduce((acc, pay) => acc + pay.amount, 0) || 0;
   const netProfit = revenueTotal - expenseTotal;
 
+  if (loading) {
+    return <TableSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header section */}
@@ -229,7 +234,7 @@ export default function FinancePage() {
           </button>
           <button
             onClick={() => setShowInvoiceModal(true)}
-            className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 px-4 py-2.5 text-slate-950 font-bold text-xs shadow-md shadow-indigo-600/10 hover:scale-[1.02] transition-transform cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground font-semibold px-4 py-2.5 text-xs shadow-md hover:scale-[1.02] hover:opacity-90 transition-all cursor-pointer"
           >
             <Plus className="h-4 w-4 text-slate-950" />
             <span>Create Invoice</span>
@@ -306,13 +311,7 @@ export default function FinancePage() {
         </button>
       </div>
 
-      {loading ? (
-        <div className="flex h-64 items-center justify-center text-xs text-muted-foreground">
-          <Activity className="h-5 w-5 animate-spin mr-2 text-sky-400" />
-          Loading finance ledgers...
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Main List column */}
           <div className="lg:col-span-2 space-y-4">
             {activeTab === 'invoices' && (
@@ -506,7 +505,6 @@ export default function FinancePage() {
             </div>
           </div>
         </div>
-      )}
 
       {/* Invoice Modal */}
       {showInvoiceModal && (
@@ -574,7 +572,7 @@ export default function FinancePage() {
 
               <button
                 type="submit"
-                className="w-full h-10 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 text-slate-950 font-bold hover:scale-[0.98] transition-transform cursor-pointer"
+                className="w-full h-10 rounded-xl bg-primary text-primary-foreground font-bold hover:scale-[0.98] hover:opacity-90 transition-all cursor-pointer"
               >
                 Issue Invoice & Log GST
               </button>
@@ -645,7 +643,7 @@ export default function FinancePage() {
 
               <button
                 type="submit"
-                className="w-full h-10 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 text-slate-950 font-bold hover:scale-[0.98] transition-transform cursor-pointer"
+                className="w-full h-10 rounded-xl bg-primary text-primary-foreground font-bold hover:scale-[0.98] hover:opacity-90 transition-all cursor-pointer"
               >
                 Log Outflow Expense
               </button>
@@ -714,7 +712,7 @@ export default function FinancePage() {
 
               <button
                 type="submit"
-                className="w-full h-10 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 text-slate-950 font-bold hover:scale-[0.98] transition-transform cursor-pointer"
+                className="w-full h-10 rounded-xl bg-primary text-primary-foreground font-bold hover:scale-[0.98] hover:opacity-90 transition-all cursor-pointer"
               >
                 Process Payment Inflow
               </button>

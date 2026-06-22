@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, ArrowLeftRight, Activity, AlertTriangle, QrCode } from 'lucide-react';
+import { Search, ArrowLeftRight, AlertTriangle, QrCode } from 'lucide-react';
+import { TableSkeleton } from '@/components/skeleton';
 
 interface Warehouse {
   id: string;
@@ -148,6 +149,10 @@ export default function InventoryPage() {
     );
   });
 
+  if (loading) {
+    return <TableSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header section */}
@@ -160,7 +165,7 @@ export default function InventoryPage() {
         </div>
         <button
           onClick={() => setShowAdjustModal(true)}
-          className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 px-4 py-2.5 text-slate-950 font-bold text-xs shadow-md shadow-indigo-600/10 hover:scale-[1.02] transition-transform cursor-pointer"
+          className="flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground font-semibold px-4 py-2.5 text-xs shadow-md hover:scale-[1.02] hover:opacity-90 transition-all cursor-pointer"
         >
           <ArrowLeftRight className="h-4 w-4 text-slate-950" />
           <span>Post Stock Action</span>
@@ -203,12 +208,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex h-64 items-center justify-center text-xs text-muted-foreground">
-          <Activity className="h-5 w-5 animate-spin mr-2 text-sky-400" />
-          Loading warehouse ledger...
-        </div>
-      ) : activeTab === 'levels' ? (
+      {activeTab === 'levels' ? (
         filteredItems?.length === 0 ? (
           <div className="rounded-2xl border border-border bg-card p-12 text-center text-xs text-muted-foreground">
             No stock entries. Record a Receive action to populate inventory levels.
@@ -489,7 +489,7 @@ export default function InventoryPage() {
 
               <button
                 type="submit"
-                className="w-full h-10 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-600 text-slate-950 font-bold hover:scale-[0.98] transition-transform cursor-pointer"
+                className="w-full h-10 rounded-xl bg-primary text-primary-foreground font-bold hover:scale-[0.98] hover:opacity-90 transition-all cursor-pointer"
               >
                 Log Transaction Action
               </button>
