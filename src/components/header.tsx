@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from './theme-context';
 import { Sun, Moon, Bell, Search, Settings, Calendar, ChevronDown, RefreshCw } from 'lucide-react';
 
@@ -12,14 +13,61 @@ interface NotificationItem {
 }
 
 export default function Header() {
+  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
+  
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
-    { id: 1, title: 'Low Stock Alert', message: 'RGB Status Indicator LED count is 450 (min 1000)', type: 'warning' },
-    { id: 2, title: 'Maintenance Overdue', message: 'Plastic Injection Press 02 maintenance scheduled for 2026-06-12 is overdue', type: 'error' },
-    { id: 3, title: 'Production Complete', message: 'Production Order PO-2026-02 is completed (20 units)', type: 'info' },
-    { id: 4, title: 'New Order Received', message: 'Production order PO-2026-089 has been queued', type: 'info' },
-  ]);
+  const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
+  const [period, setPeriod] = useState('This Month');
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  useEffect(() => {
+    async function fetchAlerts() {
+      try {
+        const res = await fetch('/api/v1/dashboard');
+        if (res.ok) {
+          const data = await res.json();
+          const list: NotificationItem[] = [];
+          
+          // 1. Low Stock alerts from dynamic database
+          if (data.lowStock && data.lowStock.length > 0) {
+            data.lowStock.forEach((item: any, idx: number) => {
+              list.push({
+                id: idx + 1,
+                title: 'Low Stock Alert',
+                message: `${item.name} count is ${item.currentStock} ${item.unit} (min ${item.minStock} ${item.unit})`,
+                type: 'warning',
+              });
+            });
+          }
+
+          // 2. Machine maintenance alert from dynamic database
+          if (data.machines && data.machines.maintenance > 0) {
+            list.push({
+              id: list.length + 1,
+              title: 'Machine Maintenance',
+              message: `${data.machines.maintenance} machine(s) are currently undergoing maintenance checkups.`,
+              type: 'info',
+            });
+          }
+
+          setNotifications(list);
+
+          // 3. Trigger active alert notification to the user if warnings exist
+          if (list.length > 0) {
+            const warningNotifs = list.filter(n => n.type === 'warning');
+            if (warningNotifs.length > 0) {
+              const firstWarning = warningNotifs[0];
+              alert(`🚨 ${firstWarning.title}: ${firstWarning.message}`);
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load header notification telemetry', e);
+      }
+    }
+    fetchAlerts();
+  }, []);
 
   const unreadCount = notifications.length;
   const markAllRead = () => setNotifications([]);
@@ -60,22 +108,57 @@ export default function Header() {
       {/* Right Controls */}
       <div className="flex items-center gap-3">
         {/* Date Selector Dropdown */}
-        <button
-          className="flex h-9 items-center gap-2 rounded-lg border px-3 text-xs font-semibold transition-all duration-200 hover:bg-(--hover-bg) active:scale-95"
-          style={{
-            borderColor: 'var(--border)',
-            backgroundColor: 'var(--card)',
-            color: 'var(--foreground)',
-          }}
-        >
-          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="font-medium">This Month</span>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+            className="flex h-9 items-center gap-2 rounded-lg border px-3 text-xs font-semibold transition-all duration-200 hover:bg-(--hover-bg) active:scale-95 cursor-pointer"
+            style={{
+              borderColor: 'var(--border)',
+              backgroundColor: 'var(--card)',
+              color: 'var(--foreground)',
+            }}
+          >
+            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="font-medium">{period}</span>
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+
+          {showPeriodDropdown && (
+            <div
+              className="absolute right-0 mt-2 w-40 rounded-xl border shadow-xl animate-scale-in z-20"
+              style={{
+                backgroundColor: 'var(--card)',
+                borderColor: 'var(--border)',
+              }}
+            >
+              <div className="p-1.5 space-y-0.5">
+                {['This Month', 'Last 30 Days', 'This Year'].map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => {
+                      setPeriod(p);
+                      setShowPeriodDropdown(false);
+                      alert(`📅 Period filter changed to: ${p}`);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors cursor-pointer ${
+                      period === p ? 'bg-secondary text-primary font-bold' : 'text-muted-foreground hover:bg-secondary/40 hover:text-foreground'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Refresh button */}
         <button
-          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95"
+          onClick={() => {
+            alert('🔄 Refreshing data fields across all modules...');
+            window.location.reload();
+          }}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95 cursor-pointer"
           style={{
             borderColor: 'var(--border)',
             backgroundColor: 'var(--card)',
@@ -90,7 +173,7 @@ export default function Header() {
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95"
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95 cursor-pointer"
             style={{
               borderColor: 'var(--border)',
               backgroundColor: 'var(--card)',
@@ -107,7 +190,7 @@ export default function Header() {
 
           {showNotifications && (
             <div
-              className="absolute right-0 mt-2 w-80 rounded-xl border shadow-xl animate-scale-in"
+              className="absolute right-0 mt-2 w-80 rounded-xl border shadow-xl animate-scale-in z-20"
               style={{
                 backgroundColor: 'var(--card)',
                 borderColor: 'var(--border)',
@@ -123,7 +206,7 @@ export default function Header() {
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllRead}
-                    className="text-[10px] font-medium hover:underline"
+                    className="text-[10px] font-medium hover:underline cursor-pointer"
                     style={{ color: '#3b82f6' }}
                   >
                     Clear all
@@ -177,7 +260,8 @@ export default function Header() {
 
         {/* Settings button */}
         <button
-          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95"
+          onClick={() => router.push('/app/settings')}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95 cursor-pointer"
           style={{
             borderColor: 'var(--border)',
             backgroundColor: 'var(--card)',
@@ -191,7 +275,7 @@ export default function Header() {
         {/* Theme Toggler */}
         <button
           onClick={toggleTheme}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95"
+          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-200 hover:bg-(--hover-bg) active:scale-95 cursor-pointer"
           style={{
             borderColor: 'var(--border)',
             backgroundColor: 'var(--card)',
