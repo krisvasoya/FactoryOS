@@ -41,6 +41,9 @@ model Company {
   aiConversations   AIConversation[]
   notifications     Notification[]
   settings          Settings[]
+  purchaseInvoices  PurchaseInvoice[]
+  goodsReceipts     GoodsReceipt[]
+  invoiceAIAliases  InvoiceAIAlias[]
 }
 
 model User {
@@ -101,6 +104,8 @@ model Product {
   productionOrders ProductionOrder[]
   inventoryItems InventoryItem[]
   salesOrderItems SalesOrderItem[]
+  purchaseInvoiceItems PurchaseInvoiceItem[]
+  invoiceAIAliases InvoiceAIAlias[]
 }
 
 model RawMaterial {
@@ -123,6 +128,8 @@ model RawMaterial {
   bomItems    BOMItem[]
   inventoryItems InventoryItem[]
   purchaseOrderItems PurchaseOrderItem[]
+  purchaseInvoiceItems PurchaseInvoiceItem[]
+  invoiceAIAliases InvoiceAIAlias[]
 }
 
 model Warehouse {
@@ -139,6 +146,7 @@ model Warehouse {
   inventoryItems InventoryItem[]
   stockMovementsFrom StockMovement[] @relation("sourceWarehouse")
   stockMovementsTo StockMovement[] @relation("destWarehouse")
+  goodsReceipts GoodsReceipt[]
 }
 
 model InventoryItem {
@@ -340,6 +348,7 @@ model Supplier {
   // Relations
   company     Company  @relation(fields: [companyId], references: [id])
   purchaseOrders PurchaseOrder[]
+  purchaseInvoices PurchaseInvoice[]
 }
 
 model PurchaseOrder {
@@ -517,4 +526,95 @@ model Settings {
   company     Company  @relation(fields: [companyId], references: [id])
 
   @@unique([companyId, key])
+}
+
+// ==========================================
+// DOCUMENT INTELLIGENCE PLATFORM
+// ==========================================
+
+model PurchaseInvoice {
+  id              String    @id @default(uuid())
+  companyId       String
+  supplierId      String?
+  supplierName    String    // raw from OCR if supplier not found
+  supplierGst     String?
+  invoiceNumber   String
+  invoiceDate     DateTime?
+  poNumber        String?   // linked purchase order number
+  subtotal        Float     @default(0)
+  cgst            Float     @default(0)
+  sgst            Float     @default(0)
+  igst            Float     @default(0)
+  freight         Float     @default(0)
+  packingCharges  Float     @default(0)
+  roundOff        Float     @default(0)
+  totalAmount     Float     @default(0)
+  status          String    @default("Posted") // Posted, Cancelled
+  rawOcrJson      String?   // full Gemini extraction stored for audit
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  company         Company          @relation(fields: [companyId], references: [id])
+  supplier        Supplier?        @relation(fields: [supplierId], references: [id])
+  items           PurchaseInvoiceItem[]
+  goodsReceipt    GoodsReceipt?
+}
+
+model PurchaseInvoiceItem {
+  id                  String   @id @default(uuid())
+  purchaseInvoiceId   String
+  rawMaterialId       String?
+  productId           String?
+  supplierProductName String   // original text from invoice
+  description         String?
+  hsn                 String?
+  quantity            Float
+  unit                String   @default("pcs")
+  unitPrice           Float
+  discount            Float    @default(0)
+  cgst                Float    @default(0)
+  sgst                Float    @default(0)
+  igst                Float    @default(0)
+  lineTotal           Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  purchaseInvoice PurchaseInvoice @relation(fields: [purchaseInvoiceId], references: [id])
+  rawMaterial     RawMaterial?    @relation(fields: [rawMaterialId], references: [id])
+  product         Product?        @relation(fields: [productId], references: [id])
+}
+
+model GoodsReceipt {
+  id                String    @id @default(uuid())
+  companyId         String
+  purchaseInvoiceId String    @unique
+  warehouseId       String
+  receivedAt        DateTime  @default(now())
+  notes             String?
+  createdAt         DateTime  @default(now())
+
+  company         Company         @relation(fields: [companyId], references: [id])
+  purchaseInvoice PurchaseInvoice @relation(fields: [purchaseInvoiceId], references: [id])
+  warehouse       Warehouse       @relation(fields: [warehouseId], references: [id])
+}
+
+model InvoiceAIAlias {
+  id                  String   @id @default(uuid())
+  companyId           String
+  supplierProductName String   // text as it appeared on the invoice
+  internalName        String   // the mapped internal product name
+  rawMaterialId       String?
+  productId           String?
+  confidence          Float    @default(1.0)
+  usageCount          Int      @default(1)
+  lastUsedAt          DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  company     Company      @relation(fields: [companyId], references: [id])
+  rawMaterial RawMaterial? @relation(fields: [rawMaterialId], references: [id])
+  product     Product?     @relation(fields: [productId], references: [id])
+
+  @@unique([companyId, supplierProductName])
 }

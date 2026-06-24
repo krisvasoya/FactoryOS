@@ -15,6 +15,7 @@ import {
   Settings,
   Users2,
   ShoppingCart,
+  Scan,
 } from 'lucide-react';
 import { FactoryOSLogo } from '@/components/factoryos-logo';
 
@@ -24,6 +25,7 @@ const sidebarItems = [
   { name: 'Inventory',  href: '/app/inventory',       icon: Archive },
   { name: 'Production', href: '/app/production',      icon: ClipboardList },
   { name: 'Finance',    href: '/app/finance',         icon: Receipt },
+  { name: 'Documents',  href: '/app/documents',       icon: Scan },
   { name: 'Employees',  href: '/app/employees',       icon: Users },
   { name: 'Contacts',   href: '/app/contacts',        icon: Users2 },
   { name: 'Orders',     href: '/app/orders',          icon: ShoppingCart },
